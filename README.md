@@ -36,7 +36,7 @@ hh:mm:ss:ms :µs :ns
 - **Python 3** — for icon generation (stdlib only, optional)
 - Windows 10 or later (requires `DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2`)
 
-> **Platform:** x86-64 only. The ASM backends use instructions specific to the x86 TSC (`RDTSC`, `RDTSCP`, `CPUID`, `LFENCE`) and are **not compatible with 32-bit Windows or ARM64**.
+> **Platform:** x86-64 only. The ASM backends use instructions specific to the x86_64 TSC (`RDTSC`, `RDTSCP`, `CPUID`, `LFENCE`) and are **not compatible with 32-bit Windows or ARM64**.
 
 ## Building
 
