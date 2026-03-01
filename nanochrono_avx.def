@@ -1,0 +1,87 @@
+LIBRARY nanochrono_avx
+EXPORTS
+    ; -- GROUP 1: Core TSC reads ------------------------------------------
+    nc_avx_tsc_start
+    nc_avx_tsc_end
+    nc_avx_tsc_raw
+    nc_avx_tsc_full_start
+    nc_avx_tsc_full_end
+    nc_avx_tsc_upper_start
+    nc_avx_tsc_upper_end
+    nc_avx_tsc_sfence_start
+    nc_avx_tsc_sfence_end
+    nc_avx_tsc_mfence_start
+    nc_avx_tsc_mfence_end
+
+    ; -- GROUP 2: RDTSCP pair ---------------------------------------------
+    nc_avx_tsc_aux
+    nc_avx_tsc_rdtscp_pair
+
+    ; -- GROUP 3: Delta / elapsed -----------------------------------------
+    nc_avx_tsc_delta
+    nc_avx_tsc_elapsed_from
+
+    ; -- GROUP 4: Spin ----------------------------------------------------
+    nc_avx_spin_until
+
+    ; -- GROUP 5: Overhead / invariant ------------------------------------
+    nc_avx_tsc_overhead
+    nc_avx_tsc_invariant
+
+    ; -- GROUP 6: YMM state -----------------------------------------------
+    nc_avx_vzeroall
+    nc_avx_warmup
+
+    ; -- GROUP 7: SIMD memory (VMOVDQU 256-bit) ---------------------------
+    nc_avx_simd_zero_buf
+    nc_avx_simd_copy_buf
+    nc_avx_simd_xor_checksum
+    nc_avx_simd_sum_u64
+    nc_avx_simd_nt_zero
+    nc_avx_simd_prefetch_loop
+
+    ; -- GROUP 8: Prefetch-enhanced TSC -----------------------------------
+    nc_avx_prefetch_tsc_start
+    nc_avx_prefetch_tsc_end
+    nc_avx_tsc_pause_start
+    nc_avx_tsc_full_fence
+
+    ; -- GROUP 9: Sequential RDTSCP stamp ---------------------------------
+    nc_avx_tsc_rdtscp_seq
+
+    ; -- GROUP 10: CPU feature detection ----------------------------------
+    nc_avx_check
+    nc_avx2_check
+
+    ; -- Backward-compat aliases ------------------------------------------
+    tsc_start_simd
+    tsc_end_simd
+
+    ; -- High-level C API -------------------------------------------------
+    nc_create
+    nc_create_backend
+    nc_destroy
+    nc_calibrate
+    nc_reset
+    nc_start
+    nc_stop
+    nc_now_cycles
+    nc_cycles_to_ns
+    nc_cycles_to_us
+    nc_cycles_to_ms
+    nc_cycles_to_sec
+    nc_ns_to_cycles
+    nc_elapsed_cycles
+    nc_elapsed_ns
+    nc_elapsed_us
+    nc_elapsed_ms
+    nc_elapsed_sec
+    nc_sleep_ns
+    nc_sleep_us
+    nc_tsc_hz
+    nc_drift_ppm
+    nc_backend
+    nc_is_avx_available
+    nc_measure_overhead_cycles
+    nc_format_ns
+    nc_format_elapsed

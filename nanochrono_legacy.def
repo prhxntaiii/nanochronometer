@@ -1,0 +1,79 @@
+LIBRARY nanochrono
+EXPORTS
+    ; -- GROUP 1: Core TSC reads (CPUID-serialised) -----------------------
+    nc_tsc_start
+    nc_tsc_end
+    nc_tsc_raw
+    nc_tsc_lfence_start
+    nc_tsc_lfence_end
+    nc_tsc_mfence_start
+    nc_tsc_mfence_end
+    nc_tsc_serialize
+
+    ; -- GROUP 2: RDTSCP pair ---------------------------------------------
+    nc_tsc_aux
+    nc_tsc_rdtscp_pair
+
+    ; -- GROUP 3: Delta / elapsed -----------------------------------------
+    nc_tsc_delta
+    nc_tsc_elapsed_from
+    nc_tsc_rdtscp_elapsed
+
+    ; -- GROUP 4: Spin ----------------------------------------------------
+    nc_tsc_spin_until
+
+    ; -- GROUP 5: Overhead / invariant / CPUID ----------------------------
+    nc_tsc_overhead
+    nc_tsc_invariant
+    nc_tsc_cpu_brand
+    nc_tsc_max_leaf
+
+    ; -- GROUP 6: SSE2 SIMD memory (MOVDQU 128-bit) -----------------------
+    nc_simd_zero_buf
+    nc_simd_copy_buf
+    nc_simd_xor_checksum
+    nc_simd_sum_u64
+    nc_simd_nt_zero
+    nc_simd_prefetch_loop
+
+    ; -- GROUP 7: Prefetch-enhanced TSC -----------------------------------
+    nc_tsc_prefetch_start
+    nc_tsc_prefetch_end
+    nc_tsc_pause_start
+    nc_tsc_full_fence
+
+    ; -- GROUP 8: Sequential RDTSCP stamp ---------------------------------
+    nc_tsc_rdtscp_seq
+
+    ; -- Backward-compat aliases ------------------------------------------
+    tsc_start_legacy
+    tsc_end_legacy
+
+    ; -- High-level C API -------------------------------------------------
+    nc_create
+    nc_create_backend
+    nc_destroy
+    nc_calibrate
+    nc_reset
+    nc_start
+    nc_stop
+    nc_now_cycles
+    nc_cycles_to_ns
+    nc_cycles_to_us
+    nc_cycles_to_ms
+    nc_cycles_to_sec
+    nc_ns_to_cycles
+    nc_elapsed_cycles
+    nc_elapsed_ns
+    nc_elapsed_us
+    nc_elapsed_ms
+    nc_elapsed_sec
+    nc_sleep_ns
+    nc_sleep_us
+    nc_tsc_hz
+    nc_drift_ppm
+    nc_backend
+    nc_is_avx_available
+    nc_measure_overhead_cycles
+    nc_format_ns
+    nc_format_elapsed
