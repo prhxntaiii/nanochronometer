@@ -1,0 +1,14 @@
+#ifndef NANOCHRONO_RESOURCE_H
+#define NANOCHRONO_RESOURCE_H
+
+#define IDI_APPICON       101
+#define IDI_NANOCHRONO    IDI_APPICON
+#define IDR_ACCEL         201
+#define IDR_CUSTOM_FONT   301
+
+#define IDC_BTN_PAUSE     1001
+#define IDC_BTN_STOP      1002
+#define IDC_BTN_RESET     1003
+#define IDC_BTN_EXIT      1004
+
+#endif /* NANOCHRONO_RESOURCE_H */

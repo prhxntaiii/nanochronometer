@@ -1,0 +1,16 @@
+obj/
+dist/
+build/
+*.obj
+*.res
+*.exp
+*.pdb
+*.ilk
+*.log
+*.tmp
+desktop.ini
+/AVX
+/legacy
+/unified
+*.csv
+nanochrono-results.csv

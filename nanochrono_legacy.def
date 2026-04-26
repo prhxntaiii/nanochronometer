@@ -1,0 +1,251 @@
+LIBRARY nanochrono
+EXPORTS
+    ; -- GROUP 1: Core TSC reads (CPUID-serialised) -----------------------
+    nc_tsc_start
+    nc_tsc_end
+    nc_tsc_raw
+    nc_tsc_lfence_start
+    nc_tsc_lfence_end
+    nc_tsc_mfence_start
+    nc_tsc_mfence_end
+    nc_tsc_serialize
+
+    ; -- GROUP 2: RDTSCP pair ---------------------------------------------
+    nc_tsc_aux
+    nc_tsc_rdtscp_pair
+
+    ; -- GROUP 3: Delta / elapsed -----------------------------------------
+    nc_tsc_delta
+    nc_tsc_elapsed_from
+    nc_tsc_rdtscp_elapsed
+
+    ; -- GROUP 4: Spin ----------------------------------------------------
+    nc_tsc_spin_until
+
+    ; -- GROUP 5: Overhead / invariant / CPUID ----------------------------
+    nc_tsc_overhead
+    nc_tsc_invariant
+    nc_tsc_cpu_brand
+    nc_tsc_max_leaf
+
+    ; -- GROUP 6: SSE2 SIMD memory (MOVDQU 128-bit) -----------------------
+    nc_simd_zero_buf
+    nc_simd_copy_buf
+    nc_simd_xor_checksum
+    nc_simd_sum_u64
+    nc_simd_nt_zero
+    nc_simd_prefetch_loop
+
+    ; -- GROUP 7: Prefetch-enhanced TSC -----------------------------------
+    nc_tsc_prefetch_start
+    nc_tsc_prefetch_end
+    nc_tsc_pause_start
+    nc_tsc_full_fence
+
+    ; -- GROUP 8: Sequential RDTSCP stamp ---------------------------------
+    nc_tsc_rdtscp_seq
+
+    ; -- Backward-compat aliases ------------------------------------------
+    tsc_start_legacy
+    tsc_end_legacy
+
+    ; -- High-level C API -------------------------------------------------
+    nc_create
+    nc_create_backend
+    nc_destroy
+    nc_calibrate
+    nc_reset
+    nc_start
+    nc_stop
+    nc_now_cycles
+    nc_cycles_to_ns
+    nc_cycles_to_us
+    nc_cycles_to_ms
+    nc_cycles_to_sec
+    nc_ns_to_cycles
+    nc_elapsed_cycles
+    nc_elapsed_ns
+    nc_elapsed_us
+    nc_elapsed_ms
+    nc_elapsed_sec
+    nc_sleep_ns
+    nc_sleep_us
+    nc_tsc_hz
+    nc_drift_ppm
+    nc_backend
+    nc_backend_name
+    nc_backend_is_available
+    nc_select_best_backend
+    nc_is_avx_available
+    nc_measure_overhead_cycles
+    nc_cpu_has_mmx
+    nc_cpu_has_sse
+    nc_cpu_has_sse2
+    nc_cpu_has_sse3
+    nc_cpu_has_ssse3
+    nc_cpu_has_sse41
+    nc_cpu_has_sse42
+    nc_cpu_has_aesni
+    nc_cpu_has_shani
+    nc_cpu_has_vaes
+    nc_cpu_has_pclmulqdq
+    nc_cpu_has_f16c
+    nc_cpu_has_fma
+    nc_cpu_has_avx2
+    nc_cpu_has_avx_vnni
+    nc_cpu_has_avx512f
+    nc_cpu_has_avx512bw
+    nc_cpu_has_avx512vl
+    nc_cpu_has_avx512vnni
+    nc_get_cpu_features
+    nc_format_ns
+    nc_format_elapsed
+
+    ; -- Low-level side-channel ASM measurement API -----------------------
+    nc_asm_sidechannel_probe_name
+    nc_asm_sidechannel_arch
+    nc_asm_sidechannel_probe
+    nc_asm_sidechannel_cache_audit
+    nc_x64_sc_rdtsc_lfence
+    nc_x64_sc_rdtscp_lfence
+    nc_x64_sc_measure_load_cycles
+    nc_x64_sc_measure_load_lfence_cycles
+    nc_x64_sc_measure_store_cycles
+    nc_x64_sc_measure_flush_reload_cycles
+    nc_x64_sc_measure_prefetch_reload_cycles
+    nc_x64_sc_measure_branch_cycles
+    nc_x64_sc_pointer_chase_cycles
+    nc_x64_sc_barrier_overhead_cycles
+
+    ; -- SIMD ASM side-channel API ----------------------------------------
+    nc_asm_simd_family_name
+    nc_asm_simd_probe_name
+    nc_asm_simd_family_available
+    nc_asm_simd_probe
+    nc_mmx_sc_counter
+    nc_mmx_sc_load_cycles
+    nc_mmx_sc_store_cycles
+    nc_mmx_sc_vector_load_cycles
+    nc_mmx_sc_vector_xor_cycles
+    nc_mmx_sc_barrier_cycles
+    nc_sse_sc_counter
+    nc_sse_sc_load_cycles
+    nc_sse_sc_store_cycles
+    nc_sse_sc_vector_load_cycles
+    nc_sse_sc_vector_xor_cycles
+    nc_sse_sc_barrier_cycles
+    nc_sse2_sc_counter
+    nc_sse2_sc_load_cycles
+    nc_sse2_sc_store_cycles
+    nc_sse2_sc_vector_load_cycles
+    nc_sse2_sc_vector_xor_cycles
+    nc_sse2_sc_barrier_cycles
+    nc_sse3_sc_counter
+    nc_sse3_sc_load_cycles
+    nc_sse3_sc_store_cycles
+    nc_sse3_sc_vector_load_cycles
+    nc_sse3_sc_vector_xor_cycles
+    nc_sse3_sc_barrier_cycles
+    nc_ssse3_sc_counter
+    nc_ssse3_sc_load_cycles
+    nc_ssse3_sc_store_cycles
+    nc_ssse3_sc_vector_load_cycles
+    nc_ssse3_sc_vector_xor_cycles
+    nc_ssse3_sc_barrier_cycles
+    nc_sse41_sc_counter
+    nc_sse41_sc_load_cycles
+    nc_sse41_sc_store_cycles
+    nc_sse41_sc_vector_load_cycles
+    nc_sse41_sc_vector_xor_cycles
+    nc_sse41_sc_barrier_cycles
+    nc_sse42_sc_counter
+    nc_sse42_sc_load_cycles
+    nc_sse42_sc_store_cycles
+    nc_sse42_sc_vector_load_cycles
+    nc_sse42_sc_vector_xor_cycles
+    nc_sse42_sc_barrier_cycles
+    nc_f16c_sc_counter
+    nc_f16c_sc_load_cycles
+    nc_f16c_sc_store_cycles
+    nc_f16c_sc_vector_load_cycles
+    nc_f16c_sc_vector_xor_cycles
+    nc_f16c_sc_barrier_cycles
+    nc_fma_sc_counter
+    nc_fma_sc_load_cycles
+    nc_fma_sc_store_cycles
+    nc_fma_sc_vector_load_cycles
+    nc_fma_sc_vector_xor_cycles
+    nc_fma_sc_barrier_cycles
+    nc_avx_sc_counter
+    nc_avx_sc_load_cycles
+    nc_avx_sc_store_cycles
+    nc_avx_sc_vector_load_cycles
+    nc_avx_sc_vector_xor_cycles
+    nc_avx_sc_barrier_cycles
+    nc_avx2_sc_counter
+    nc_avx2_sc_load_cycles
+    nc_avx2_sc_store_cycles
+    nc_avx2_sc_vector_load_cycles
+    nc_avx2_sc_vector_xor_cycles
+    nc_avx2_sc_barrier_cycles
+    nc_avx_vnni_sc_counter
+    nc_avx_vnni_sc_load_cycles
+    nc_avx_vnni_sc_store_cycles
+    nc_avx_vnni_sc_vector_load_cycles
+    nc_avx_vnni_sc_vector_xor_cycles
+    nc_avx_vnni_sc_barrier_cycles
+    nc_avx512_sc_counter
+    nc_avx512_sc_load_cycles
+    nc_avx512_sc_store_cycles
+    nc_avx512_sc_vector_load_cycles
+    nc_avx512_sc_vector_xor_cycles
+    nc_avx512_sc_barrier_cycles
+    nc_avx512_vnni_sc_counter
+    nc_avx512_vnni_sc_load_cycles
+    nc_avx512_vnni_sc_store_cycles
+    nc_avx512_vnni_sc_vector_load_cycles
+    nc_avx512_vnni_sc_vector_xor_cycles
+    nc_avx512_vnni_sc_barrier_cycles
+    nc_arm64_neon_sc_counter
+    nc_arm64_neon_sc_load_ticks
+    nc_arm64_neon_sc_store_ticks
+    nc_arm64_neon_sc_vector_load_ticks
+    nc_arm64_neon_sc_vector_xor_ticks
+    nc_arm64_neon_sc_barrier_ticks
+    nc_arm64_sve_sc_counter
+    nc_arm64_sve_sc_load_ticks
+    nc_arm64_sve_sc_store_ticks
+    nc_arm64_sve_sc_vector_load_ticks
+    nc_arm64_sve_sc_vector_xor_ticks
+    nc_arm64_sve_sc_barrier_ticks
+    nc_arm64_sve2_sc_counter
+    nc_arm64_sve2_sc_load_ticks
+    nc_arm64_sve2_sc_store_ticks
+    nc_arm64_sve2_sc_vector_load_ticks
+    nc_arm64_sve2_sc_vector_xor_ticks
+    nc_arm64_sve2_sc_barrier_ticks
+    nc_arm64_sme_sc_counter
+    nc_arm64_sme_sc_load_ticks
+    nc_arm64_sme_sc_store_ticks
+    nc_arm64_sme_sc_vector_load_ticks
+    nc_arm64_sme_sc_vector_xor_ticks
+    nc_arm64_sme_sc_barrier_ticks
+    nc_unix_time_ns
+    nc_clock_route_name
+    nc_wrapper_kind_name
+    nc_select_best_simd_family
+    nc_clock_select_best_route
+    nc_nanoclock_now_ns
+    nc_nanoclock_snapshot
+    nc_format_unix_time_ns
+    nc_measure_wrapper_overhead_cycles
+    nc_x64_sc_rdtsc_mfence
+    nc_arm64_pmccntr_el0
+    nc_arm64_pmccntr_el0_available
+    nc_stable_clock_default_config
+    nc_stable_clock_prepare
+    nc_calibrate_cycles_per_ns
+    nc_cycles_to_ns_calibrated
+    nc_raw_delta_to_ns_calibrated
+    nc_clock_read_raw_route
+    nc_clock_stability_advice
