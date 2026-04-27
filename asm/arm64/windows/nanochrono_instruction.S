@@ -69,7 +69,6 @@ nc_arm64_sve_vector_xor_loop:
 
 .align 2
 .global nc_asm_branch_probe_loop
-.type nc_asm_branch_probe_loop, %function
 nc_asm_branch_probe_loop:
     mov x8, x0        // pattern
     mov x9, x1        // count
@@ -88,4 +87,3 @@ nc_asm_branch_probe_loop:
     b.ne 1b
 2:
     ret
-.size nc_asm_branch_probe_loop, .-nc_asm_branch_probe_loop

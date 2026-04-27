@@ -324,7 +324,10 @@ if(NC_OS STREQUAL "linux" AND NC_BUILD_SHARED AND NOT NC_CRYPTO_BACKEND STREQUAL
   endif()
 endif()
 
-set(NC_CORE_SOURCES src/nanochrono_runtime.c src/nanochrono_instruction.c src/nanochrono_sidechannel.c ${NC_ASM_SOURCES})
+set(NC_CORE_SOURCES src/nanochrono_runtime.c src/nanochrono_instruction.c src/nanochrono_sidechannel.c compat_msvcrt.c ${NC_ASM_SOURCES})
+if(NC_ARCH STREQUAL "arm64" AND NC_OS STREQUAL "windows")
+  list(APPEND NC_CORE_SOURCES src/nanochrono_arm64_x86_compat.c)
+endif()
 if(NC_BUILD_SHARED)
   nc_copy_public_header("${NC_DYNAMIC_INCLUDE_DIR}")
   add_library(nanochrono SHARED ${NC_CORE_SOURCES})
@@ -339,6 +342,10 @@ if(NC_BUILD_SHARED)
   endif()
   if(NC_OS STREQUAL "linux")
     target_link_libraries(nanochrono PRIVATE m)
+  elseif(NC_OS STREQUAL "windows")
+    # nanochrono_sidechannel.c uses Winsock APIs for NTP queries.
+    # Link ws2_32 explicitly even when crypto backends are disabled.
+    target_link_libraries(nanochrono PRIVATE ws2_32)
   endif()
 endif()
 if(NC_BUILD_STATIC)
@@ -348,6 +355,9 @@ if(NC_BUILD_STATIC)
   target_link_libraries(nanochrono_static PUBLIC nc_crypto_backend)
   if(NC_OS STREQUAL "linux")
     target_link_libraries(nanochrono_static PUBLIC m)
+  elseif(NC_OS STREQUAL "windows")
+    # Public because executables linking the static library must also link Winsock.
+    target_link_libraries(nanochrono_static PUBLIC ws2_32)
   endif()
   set_target_properties(nanochrono_static PROPERTIES
     OUTPUT_NAME nanochrono
@@ -360,7 +370,7 @@ else()
   set(NC_EXE_OUTPUT_DIR "${NC_DYNAMIC_BIN_DIR}")
 endif()
 
-add_executable(nanochrono_cli nanochrono_cli.c)
+add_executable(nanochrono_cli nanochrono_cli.c compat_msvcrt.c)
 set_target_properties(nanochrono_cli PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${NC_EXE_OUTPUT_DIR}")
 target_include_directories(nanochrono_cli PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 if(TARGET nanochrono_static)
@@ -368,9 +378,16 @@ if(TARGET nanochrono_static)
 else()
   target_link_libraries(nanochrono_cli PRIVATE nanochrono)
 endif()
-if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/main.c")
+if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI)
   enable_language(RC)
-  set(NC_GUI_SOURCES main.c app.rc bench_kernels.c)
+  if(NC_ARCH STREQUAL "arm64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/main_arm64.c")
+    set(NC_GUI_MAIN_SOURCE main_arm64.c)
+  elseif(NC_ARCH STREQUAL "x64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/main_x64.c")
+    set(NC_GUI_MAIN_SOURCE main_x64.c)
+  else()
+    set(NC_GUI_MAIN_SOURCE main.c)
+  endif()
+  set(NC_GUI_SOURCES ${NC_GUI_MAIN_SOURCE} app.rc bench_kernels.c)
   if(NC_ARCH STREQUAL "x64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bench_kernels_avx2.c")
     list(APPEND NC_GUI_SOURCES bench_kernels_avx2.c)
   endif()
@@ -378,7 +395,7 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI AND EXISTS "${CMAKE_CURRENT_SOURCE_
   if(NC_ARCH STREQUAL "x64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asm/x64/windows/bench_kernels_asm.asm")
     list(APPEND NC_GUI_SOURCES asm/x64/windows/bench_kernels_asm.asm)
   endif()
-  add_executable(nanochrono_gui WIN32 ${NC_GUI_SOURCES})
+  add_executable(nanochrono_gui WIN32 compat_msvcrt.c ${NC_GUI_SOURCES})
   target_include_directories(nanochrono_gui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   if(TARGET nanochrono_static)
     target_link_libraries(nanochrono_gui PRIVATE nanochrono_static)
@@ -389,7 +406,7 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI AND EXISTS "${CMAKE_CURRENT_SOURCE_
   # so link the crypto backend here too. This propagates include paths,
   # NC_USE_* compile definitions, and final link libraries into main.c.
   target_link_libraries(nanochrono_gui PRIVATE nc_crypto_backend)
-  target_link_libraries(nanochrono_gui PRIVATE user32 gdi32 dwmapi winmm msimg32 comdlg32 comctl32 shell32)
+  target_link_libraries(nanochrono_gui PRIVATE user32 gdi32 dwmapi winmm msimg32 comdlg32 comctl32 shell32 ws2_32)
   set_target_properties(nanochrono_gui PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${NC_EXE_OUTPUT_DIR}"
     OUTPUT_NAME nanochrono_gui)
@@ -402,13 +419,15 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI AND EXISTS "${CMAKE_CURRENT_SOURCE_
     # the intrinsics they contain. This fixes MinGW GCC errors such as:
     #   _mm_sha256rnds2_epu32: target specific option mismatch  -> needs -msha
     #   _xgetbv: target specific option mismatch                -> needs -mxsave
-    set_source_files_properties(main.c PROPERTIES
+    set_source_files_properties(${NC_GUI_MAIN_SOURCE} PROPERTIES
       COMPILE_OPTIONS "-mxsave;-Wno-unknown-pragmas")
     set_source_files_properties(bench_kernels.c PROPERTIES
       COMPILE_OPTIONS "-msse4.2;-maes;-mpclmul;-msha;-mxsave")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bench_kernels_avx2.c")
       set_source_files_properties(bench_kernels_avx2.c PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mxsave")
     endif()
+  elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    set_source_files_properties(${NC_GUI_MAIN_SOURCE} PROPERTIES COMPILE_OPTIONS "-Wno-unknown-pragmas")
   elseif(MSVC AND NC_ARCH STREQUAL "x64")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bench_kernels_avx2.c")
       set_source_files_properties(bench_kernels_avx2.c PROPERTIES COMPILE_OPTIONS "/arch:AVX2")

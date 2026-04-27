@@ -1,7 +1,6 @@
 .text
 .align 2
 .global nc_arm64_mb_sisd_000
-.type nc_arm64_mb_sisd_000,%function
 nc_arm64_mb_sisd_000:
     mov x3, x0
     mov x0, #0
@@ -15,7 +14,6 @@ nc_arm64_mb_sisd_000:
     ret
 
 .global nc_arm64_mb_sisd_001
-.type nc_arm64_mb_sisd_001,%function
 nc_arm64_mb_sisd_001:
     mov x3, x0
     mov x0, #0
@@ -29,7 +27,6 @@ nc_arm64_mb_sisd_001:
     ret
 
 .global nc_arm64_mb_sisd_002
-.type nc_arm64_mb_sisd_002,%function
 nc_arm64_mb_sisd_002:
     mov x3, x0
     mov x0, #0
@@ -43,7 +40,6 @@ nc_arm64_mb_sisd_002:
     ret
 
 .global nc_arm64_mb_sisd_003
-.type nc_arm64_mb_sisd_003,%function
 nc_arm64_mb_sisd_003:
     mov x3, x0
     mov x0, #0
@@ -57,7 +53,6 @@ nc_arm64_mb_sisd_003:
     ret
 
 .global nc_arm64_mb_sisd_004
-.type nc_arm64_mb_sisd_004,%function
 nc_arm64_mb_sisd_004:
     mov x3, x0
     mov x0, #0
@@ -71,7 +66,6 @@ nc_arm64_mb_sisd_004:
     ret
 
 .global nc_arm64_mb_sisd_005
-.type nc_arm64_mb_sisd_005,%function
 nc_arm64_mb_sisd_005:
     mov x3, x0
     mov x0, #0
@@ -85,7 +79,6 @@ nc_arm64_mb_sisd_005:
     ret
 
 .global nc_arm64_mb_sisd_006
-.type nc_arm64_mb_sisd_006,%function
 nc_arm64_mb_sisd_006:
     mov x3, x0
     mov x0, #0
@@ -99,7 +92,6 @@ nc_arm64_mb_sisd_006:
     ret
 
 .global nc_arm64_mb_sisd_007
-.type nc_arm64_mb_sisd_007,%function
 nc_arm64_mb_sisd_007:
     mov x3, x0
     mov x0, #0
@@ -113,7 +105,6 @@ nc_arm64_mb_sisd_007:
     ret
 
 .global nc_arm64_mb_sisd_008
-.type nc_arm64_mb_sisd_008,%function
 nc_arm64_mb_sisd_008:
     mov x3, x0
     mov x0, #0
@@ -127,7 +118,6 @@ nc_arm64_mb_sisd_008:
     ret
 
 .global nc_arm64_mb_sisd_009
-.type nc_arm64_mb_sisd_009,%function
 nc_arm64_mb_sisd_009:
     mov x3, x0
     mov x0, #0
@@ -141,7 +131,6 @@ nc_arm64_mb_sisd_009:
     ret
 
 .global nc_arm64_mb_sisd_010
-.type nc_arm64_mb_sisd_010,%function
 nc_arm64_mb_sisd_010:
     mov x3, x0
     mov x0, #0
@@ -155,7 +144,6 @@ nc_arm64_mb_sisd_010:
     ret
 
 .global nc_arm64_mb_sisd_011
-.type nc_arm64_mb_sisd_011,%function
 nc_arm64_mb_sisd_011:
     mov x3, x0
     mov x0, #0
@@ -169,7 +157,6 @@ nc_arm64_mb_sisd_011:
     ret
 
 .global nc_arm64_mb_sisd_012
-.type nc_arm64_mb_sisd_012,%function
 nc_arm64_mb_sisd_012:
     mov x3, x0
     mov x0, #0
@@ -183,7 +170,6 @@ nc_arm64_mb_sisd_012:
     ret
 
 .global nc_arm64_mb_sisd_013
-.type nc_arm64_mb_sisd_013,%function
 nc_arm64_mb_sisd_013:
     mov x3, x0
     mov x0, #0
@@ -197,7 +183,6 @@ nc_arm64_mb_sisd_013:
     ret
 
 .global nc_arm64_mb_sisd_014
-.type nc_arm64_mb_sisd_014,%function
 nc_arm64_mb_sisd_014:
     mov x3, x0
     mov x0, #0
@@ -211,7 +196,6 @@ nc_arm64_mb_sisd_014:
     ret
 
 .global nc_arm64_mb_sisd_015
-.type nc_arm64_mb_sisd_015,%function
 nc_arm64_mb_sisd_015:
     mov x3, x0
     mov x0, #0
@@ -225,7 +209,6 @@ nc_arm64_mb_sisd_015:
     ret
 
 .global nc_arm64_mb_sisd_016
-.type nc_arm64_mb_sisd_016,%function
 nc_arm64_mb_sisd_016:
     mov x3, x0
     mov x0, #0
@@ -239,7 +222,6 @@ nc_arm64_mb_sisd_016:
     ret
 
 .global nc_arm64_mb_sisd_017
-.type nc_arm64_mb_sisd_017,%function
 nc_arm64_mb_sisd_017:
     mov x3, x0
     mov x0, #0
@@ -253,7 +235,6 @@ nc_arm64_mb_sisd_017:
     ret
 
 .global nc_arm64_mb_sisd_018
-.type nc_arm64_mb_sisd_018,%function
 nc_arm64_mb_sisd_018:
     mov x3, x0
     mov x0, #0
@@ -267,7 +248,6 @@ nc_arm64_mb_sisd_018:
     ret
 
 .global nc_arm64_mb_sisd_019
-.type nc_arm64_mb_sisd_019,%function
 nc_arm64_mb_sisd_019:
     mov x3, x0
     mov x0, #0
@@ -281,7 +261,6 @@ nc_arm64_mb_sisd_019:
     ret
 
 .global nc_arm64_mb_sisd_020
-.type nc_arm64_mb_sisd_020,%function
 nc_arm64_mb_sisd_020:
     mov x3, x0
     mov x0, #0
@@ -295,7 +274,6 @@ nc_arm64_mb_sisd_020:
     ret
 
 .global nc_arm64_mb_sisd_021
-.type nc_arm64_mb_sisd_021,%function
 nc_arm64_mb_sisd_021:
     mov x3, x0
     mov x0, #0
@@ -309,7 +287,6 @@ nc_arm64_mb_sisd_021:
     ret
 
 .global nc_arm64_mb_sisd_022
-.type nc_arm64_mb_sisd_022,%function
 nc_arm64_mb_sisd_022:
     mov x3, x0
     mov x0, #0
@@ -323,7 +300,6 @@ nc_arm64_mb_sisd_022:
     ret
 
 .global nc_arm64_mb_sisd_023
-.type nc_arm64_mb_sisd_023,%function
 nc_arm64_mb_sisd_023:
     mov x3, x0
     mov x0, #0
@@ -337,7 +313,6 @@ nc_arm64_mb_sisd_023:
     ret
 
 .global nc_arm64_mb_sisd_024
-.type nc_arm64_mb_sisd_024,%function
 nc_arm64_mb_sisd_024:
     mov x3, x0
     mov x0, #0
@@ -351,7 +326,6 @@ nc_arm64_mb_sisd_024:
     ret
 
 .global nc_arm64_mb_sisd_025
-.type nc_arm64_mb_sisd_025,%function
 nc_arm64_mb_sisd_025:
     mov x3, x0
     mov x0, #0
@@ -365,7 +339,6 @@ nc_arm64_mb_sisd_025:
     ret
 
 .global nc_arm64_mb_sisd_026
-.type nc_arm64_mb_sisd_026,%function
 nc_arm64_mb_sisd_026:
     mov x3, x0
     mov x0, #0
@@ -379,7 +352,6 @@ nc_arm64_mb_sisd_026:
     ret
 
 .global nc_arm64_mb_sisd_027
-.type nc_arm64_mb_sisd_027,%function
 nc_arm64_mb_sisd_027:
     mov x3, x0
     mov x0, #0
@@ -393,7 +365,6 @@ nc_arm64_mb_sisd_027:
     ret
 
 .global nc_arm64_mb_sisd_028
-.type nc_arm64_mb_sisd_028,%function
 nc_arm64_mb_sisd_028:
     mov x3, x0
     mov x0, #0
@@ -407,7 +378,6 @@ nc_arm64_mb_sisd_028:
     ret
 
 .global nc_arm64_mb_sisd_029
-.type nc_arm64_mb_sisd_029,%function
 nc_arm64_mb_sisd_029:
     mov x3, x0
     mov x0, #0
@@ -421,7 +391,6 @@ nc_arm64_mb_sisd_029:
     ret
 
 .global nc_arm64_mb_sisd_030
-.type nc_arm64_mb_sisd_030,%function
 nc_arm64_mb_sisd_030:
     mov x3, x0
     mov x0, #0
@@ -435,7 +404,6 @@ nc_arm64_mb_sisd_030:
     ret
 
 .global nc_arm64_mb_sisd_031
-.type nc_arm64_mb_sisd_031,%function
 nc_arm64_mb_sisd_031:
     mov x3, x0
     mov x0, #0
@@ -449,7 +417,6 @@ nc_arm64_mb_sisd_031:
     ret
 
 .global nc_arm64_mb_sisd_032
-.type nc_arm64_mb_sisd_032,%function
 nc_arm64_mb_sisd_032:
     mov x3, x0
     mov x0, #0
@@ -463,7 +430,6 @@ nc_arm64_mb_sisd_032:
     ret
 
 .global nc_arm64_mb_sisd_033
-.type nc_arm64_mb_sisd_033,%function
 nc_arm64_mb_sisd_033:
     mov x3, x0
     mov x0, #0
@@ -477,7 +443,6 @@ nc_arm64_mb_sisd_033:
     ret
 
 .global nc_arm64_mb_sisd_034
-.type nc_arm64_mb_sisd_034,%function
 nc_arm64_mb_sisd_034:
     mov x3, x0
     mov x0, #0
@@ -491,7 +456,6 @@ nc_arm64_mb_sisd_034:
     ret
 
 .global nc_arm64_mb_sisd_035
-.type nc_arm64_mb_sisd_035,%function
 nc_arm64_mb_sisd_035:
     mov x3, x0
     mov x0, #0
@@ -505,7 +469,6 @@ nc_arm64_mb_sisd_035:
     ret
 
 .global nc_arm64_mb_sisd_036
-.type nc_arm64_mb_sisd_036,%function
 nc_arm64_mb_sisd_036:
     mov x3, x0
     mov x0, #0
@@ -519,7 +482,6 @@ nc_arm64_mb_sisd_036:
     ret
 
 .global nc_arm64_mb_sisd_037
-.type nc_arm64_mb_sisd_037,%function
 nc_arm64_mb_sisd_037:
     mov x3, x0
     mov x0, #0
@@ -533,7 +495,6 @@ nc_arm64_mb_sisd_037:
     ret
 
 .global nc_arm64_mb_sisd_038
-.type nc_arm64_mb_sisd_038,%function
 nc_arm64_mb_sisd_038:
     mov x3, x0
     mov x0, #0
@@ -547,7 +508,6 @@ nc_arm64_mb_sisd_038:
     ret
 
 .global nc_arm64_mb_sisd_039
-.type nc_arm64_mb_sisd_039,%function
 nc_arm64_mb_sisd_039:
     mov x3, x0
     mov x0, #0
@@ -561,7 +521,6 @@ nc_arm64_mb_sisd_039:
     ret
 
 .global nc_arm64_mb_sisd_040
-.type nc_arm64_mb_sisd_040,%function
 nc_arm64_mb_sisd_040:
     mov x3, x0
     mov x0, #0
@@ -575,7 +534,6 @@ nc_arm64_mb_sisd_040:
     ret
 
 .global nc_arm64_mb_sisd_041
-.type nc_arm64_mb_sisd_041,%function
 nc_arm64_mb_sisd_041:
     mov x3, x0
     mov x0, #0
@@ -589,7 +547,6 @@ nc_arm64_mb_sisd_041:
     ret
 
 .global nc_arm64_mb_sisd_042
-.type nc_arm64_mb_sisd_042,%function
 nc_arm64_mb_sisd_042:
     mov x3, x0
     mov x0, #0
@@ -603,7 +560,6 @@ nc_arm64_mb_sisd_042:
     ret
 
 .global nc_arm64_mb_sisd_043
-.type nc_arm64_mb_sisd_043,%function
 nc_arm64_mb_sisd_043:
     mov x3, x0
     mov x0, #0
@@ -617,7 +573,6 @@ nc_arm64_mb_sisd_043:
     ret
 
 .global nc_arm64_mb_sisd_044
-.type nc_arm64_mb_sisd_044,%function
 nc_arm64_mb_sisd_044:
     mov x3, x0
     mov x0, #0
@@ -631,7 +586,6 @@ nc_arm64_mb_sisd_044:
     ret
 
 .global nc_arm64_mb_sisd_045
-.type nc_arm64_mb_sisd_045,%function
 nc_arm64_mb_sisd_045:
     mov x3, x0
     mov x0, #0
@@ -645,7 +599,6 @@ nc_arm64_mb_sisd_045:
     ret
 
 .global nc_arm64_mb_sisd_046
-.type nc_arm64_mb_sisd_046,%function
 nc_arm64_mb_sisd_046:
     mov x3, x0
     mov x0, #0
@@ -659,7 +612,6 @@ nc_arm64_mb_sisd_046:
     ret
 
 .global nc_arm64_mb_sisd_047
-.type nc_arm64_mb_sisd_047,%function
 nc_arm64_mb_sisd_047:
     mov x3, x0
     mov x0, #0
@@ -673,7 +625,6 @@ nc_arm64_mb_sisd_047:
     ret
 
 .global nc_arm64_mb_sisd_048
-.type nc_arm64_mb_sisd_048,%function
 nc_arm64_mb_sisd_048:
     mov x3, x0
     mov x0, #0
@@ -687,7 +638,6 @@ nc_arm64_mb_sisd_048:
     ret
 
 .global nc_arm64_mb_sisd_049
-.type nc_arm64_mb_sisd_049,%function
 nc_arm64_mb_sisd_049:
     mov x3, x0
     mov x0, #0
@@ -701,7 +651,6 @@ nc_arm64_mb_sisd_049:
     ret
 
 .global nc_arm64_mb_counter_000
-.type nc_arm64_mb_counter_000,%function
 nc_arm64_mb_counter_000:
     mov x3, x0
     mov x0, #0
@@ -716,7 +665,6 @@ nc_arm64_mb_counter_000:
     ret
 
 .global nc_arm64_mb_counter_001
-.type nc_arm64_mb_counter_001,%function
 nc_arm64_mb_counter_001:
     mov x3, x0
     mov x0, #0
@@ -731,7 +679,6 @@ nc_arm64_mb_counter_001:
     ret
 
 .global nc_arm64_mb_counter_002
-.type nc_arm64_mb_counter_002,%function
 nc_arm64_mb_counter_002:
     mov x3, x0
     mov x0, #0
@@ -746,7 +693,6 @@ nc_arm64_mb_counter_002:
     ret
 
 .global nc_arm64_mb_counter_003
-.type nc_arm64_mb_counter_003,%function
 nc_arm64_mb_counter_003:
     mov x3, x0
     mov x0, #0
@@ -761,7 +707,6 @@ nc_arm64_mb_counter_003:
     ret
 
 .global nc_arm64_mb_counter_004
-.type nc_arm64_mb_counter_004,%function
 nc_arm64_mb_counter_004:
     mov x3, x0
     mov x0, #0
@@ -776,7 +721,6 @@ nc_arm64_mb_counter_004:
     ret
 
 .global nc_arm64_mb_counter_005
-.type nc_arm64_mb_counter_005,%function
 nc_arm64_mb_counter_005:
     mov x3, x0
     mov x0, #0
@@ -791,7 +735,6 @@ nc_arm64_mb_counter_005:
     ret
 
 .global nc_arm64_mb_counter_006
-.type nc_arm64_mb_counter_006,%function
 nc_arm64_mb_counter_006:
     mov x3, x0
     mov x0, #0
@@ -806,7 +749,6 @@ nc_arm64_mb_counter_006:
     ret
 
 .global nc_arm64_mb_counter_007
-.type nc_arm64_mb_counter_007,%function
 nc_arm64_mb_counter_007:
     mov x3, x0
     mov x0, #0
@@ -821,7 +763,6 @@ nc_arm64_mb_counter_007:
     ret
 
 .global nc_arm64_mb_counter_008
-.type nc_arm64_mb_counter_008,%function
 nc_arm64_mb_counter_008:
     mov x3, x0
     mov x0, #0
@@ -836,7 +777,6 @@ nc_arm64_mb_counter_008:
     ret
 
 .global nc_arm64_mb_counter_009
-.type nc_arm64_mb_counter_009,%function
 nc_arm64_mb_counter_009:
     mov x3, x0
     mov x0, #0
@@ -851,7 +791,6 @@ nc_arm64_mb_counter_009:
     ret
 
 .global nc_arm64_mb_counter_010
-.type nc_arm64_mb_counter_010,%function
 nc_arm64_mb_counter_010:
     mov x3, x0
     mov x0, #0
@@ -866,7 +805,6 @@ nc_arm64_mb_counter_010:
     ret
 
 .global nc_arm64_mb_counter_011
-.type nc_arm64_mb_counter_011,%function
 nc_arm64_mb_counter_011:
     mov x3, x0
     mov x0, #0
@@ -881,7 +819,6 @@ nc_arm64_mb_counter_011:
     ret
 
 .global nc_arm64_mb_counter_012
-.type nc_arm64_mb_counter_012,%function
 nc_arm64_mb_counter_012:
     mov x3, x0
     mov x0, #0
@@ -896,7 +833,6 @@ nc_arm64_mb_counter_012:
     ret
 
 .global nc_arm64_mb_counter_013
-.type nc_arm64_mb_counter_013,%function
 nc_arm64_mb_counter_013:
     mov x3, x0
     mov x0, #0
@@ -911,7 +847,6 @@ nc_arm64_mb_counter_013:
     ret
 
 .global nc_arm64_mb_counter_014
-.type nc_arm64_mb_counter_014,%function
 nc_arm64_mb_counter_014:
     mov x3, x0
     mov x0, #0
@@ -926,7 +861,6 @@ nc_arm64_mb_counter_014:
     ret
 
 .global nc_arm64_mb_counter_015
-.type nc_arm64_mb_counter_015,%function
 nc_arm64_mb_counter_015:
     mov x3, x0
     mov x0, #0
@@ -941,7 +875,6 @@ nc_arm64_mb_counter_015:
     ret
 
 .global nc_arm64_mb_counter_016
-.type nc_arm64_mb_counter_016,%function
 nc_arm64_mb_counter_016:
     mov x3, x0
     mov x0, #0
@@ -956,7 +889,6 @@ nc_arm64_mb_counter_016:
     ret
 
 .global nc_arm64_mb_counter_017
-.type nc_arm64_mb_counter_017,%function
 nc_arm64_mb_counter_017:
     mov x3, x0
     mov x0, #0
@@ -971,7 +903,6 @@ nc_arm64_mb_counter_017:
     ret
 
 .global nc_arm64_mb_counter_018
-.type nc_arm64_mb_counter_018,%function
 nc_arm64_mb_counter_018:
     mov x3, x0
     mov x0, #0
@@ -986,7 +917,6 @@ nc_arm64_mb_counter_018:
     ret
 
 .global nc_arm64_mb_counter_019
-.type nc_arm64_mb_counter_019,%function
 nc_arm64_mb_counter_019:
     mov x3, x0
     mov x0, #0
@@ -1001,7 +931,6 @@ nc_arm64_mb_counter_019:
     ret
 
 .global nc_arm64_mb_counter_020
-.type nc_arm64_mb_counter_020,%function
 nc_arm64_mb_counter_020:
     mov x3, x0
     mov x0, #0
@@ -1016,7 +945,6 @@ nc_arm64_mb_counter_020:
     ret
 
 .global nc_arm64_mb_counter_021
-.type nc_arm64_mb_counter_021,%function
 nc_arm64_mb_counter_021:
     mov x3, x0
     mov x0, #0
@@ -1031,7 +959,6 @@ nc_arm64_mb_counter_021:
     ret
 
 .global nc_arm64_mb_counter_022
-.type nc_arm64_mb_counter_022,%function
 nc_arm64_mb_counter_022:
     mov x3, x0
     mov x0, #0
@@ -1046,7 +973,6 @@ nc_arm64_mb_counter_022:
     ret
 
 .global nc_arm64_mb_counter_023
-.type nc_arm64_mb_counter_023,%function
 nc_arm64_mb_counter_023:
     mov x3, x0
     mov x0, #0
@@ -1061,7 +987,6 @@ nc_arm64_mb_counter_023:
     ret
 
 .global nc_arm64_mb_counter_024
-.type nc_arm64_mb_counter_024,%function
 nc_arm64_mb_counter_024:
     mov x3, x0
     mov x0, #0
@@ -1076,7 +1001,6 @@ nc_arm64_mb_counter_024:
     ret
 
 .global nc_arm64_mb_counter_025
-.type nc_arm64_mb_counter_025,%function
 nc_arm64_mb_counter_025:
     mov x3, x0
     mov x0, #0
@@ -1091,7 +1015,6 @@ nc_arm64_mb_counter_025:
     ret
 
 .global nc_arm64_mb_counter_026
-.type nc_arm64_mb_counter_026,%function
 nc_arm64_mb_counter_026:
     mov x3, x0
     mov x0, #0
@@ -1106,7 +1029,6 @@ nc_arm64_mb_counter_026:
     ret
 
 .global nc_arm64_mb_counter_027
-.type nc_arm64_mb_counter_027,%function
 nc_arm64_mb_counter_027:
     mov x3, x0
     mov x0, #0
@@ -1121,7 +1043,6 @@ nc_arm64_mb_counter_027:
     ret
 
 .global nc_arm64_mb_counter_028
-.type nc_arm64_mb_counter_028,%function
 nc_arm64_mb_counter_028:
     mov x3, x0
     mov x0, #0
@@ -1136,7 +1057,6 @@ nc_arm64_mb_counter_028:
     ret
 
 .global nc_arm64_mb_counter_029
-.type nc_arm64_mb_counter_029,%function
 nc_arm64_mb_counter_029:
     mov x3, x0
     mov x0, #0
@@ -1151,7 +1071,6 @@ nc_arm64_mb_counter_029:
     ret
 
 .global nc_arm64_mb_counter_030
-.type nc_arm64_mb_counter_030,%function
 nc_arm64_mb_counter_030:
     mov x3, x0
     mov x0, #0
@@ -1166,7 +1085,6 @@ nc_arm64_mb_counter_030:
     ret
 
 .global nc_arm64_mb_counter_031
-.type nc_arm64_mb_counter_031,%function
 nc_arm64_mb_counter_031:
     mov x3, x0
     mov x0, #0
@@ -1181,7 +1099,6 @@ nc_arm64_mb_counter_031:
     ret
 
 .global nc_arm64_mb_counter_032
-.type nc_arm64_mb_counter_032,%function
 nc_arm64_mb_counter_032:
     mov x3, x0
     mov x0, #0
@@ -1196,7 +1113,6 @@ nc_arm64_mb_counter_032:
     ret
 
 .global nc_arm64_mb_counter_033
-.type nc_arm64_mb_counter_033,%function
 nc_arm64_mb_counter_033:
     mov x3, x0
     mov x0, #0
@@ -1211,7 +1127,6 @@ nc_arm64_mb_counter_033:
     ret
 
 .global nc_arm64_mb_counter_034
-.type nc_arm64_mb_counter_034,%function
 nc_arm64_mb_counter_034:
     mov x3, x0
     mov x0, #0
@@ -1226,7 +1141,6 @@ nc_arm64_mb_counter_034:
     ret
 
 .global nc_arm64_mb_counter_035
-.type nc_arm64_mb_counter_035,%function
 nc_arm64_mb_counter_035:
     mov x3, x0
     mov x0, #0
@@ -1241,7 +1155,6 @@ nc_arm64_mb_counter_035:
     ret
 
 .global nc_arm64_mb_counter_036
-.type nc_arm64_mb_counter_036,%function
 nc_arm64_mb_counter_036:
     mov x3, x0
     mov x0, #0
@@ -1256,7 +1169,6 @@ nc_arm64_mb_counter_036:
     ret
 
 .global nc_arm64_mb_counter_037
-.type nc_arm64_mb_counter_037,%function
 nc_arm64_mb_counter_037:
     mov x3, x0
     mov x0, #0
@@ -1271,7 +1183,6 @@ nc_arm64_mb_counter_037:
     ret
 
 .global nc_arm64_mb_counter_038
-.type nc_arm64_mb_counter_038,%function
 nc_arm64_mb_counter_038:
     mov x3, x0
     mov x0, #0
@@ -1286,7 +1197,6 @@ nc_arm64_mb_counter_038:
     ret
 
 .global nc_arm64_mb_counter_039
-.type nc_arm64_mb_counter_039,%function
 nc_arm64_mb_counter_039:
     mov x3, x0
     mov x0, #0
@@ -1301,7 +1211,6 @@ nc_arm64_mb_counter_039:
     ret
 
 .global nc_arm64_mb_counter_040
-.type nc_arm64_mb_counter_040,%function
 nc_arm64_mb_counter_040:
     mov x3, x0
     mov x0, #0
@@ -1316,7 +1225,6 @@ nc_arm64_mb_counter_040:
     ret
 
 .global nc_arm64_mb_counter_041
-.type nc_arm64_mb_counter_041,%function
 nc_arm64_mb_counter_041:
     mov x3, x0
     mov x0, #0
@@ -1331,7 +1239,6 @@ nc_arm64_mb_counter_041:
     ret
 
 .global nc_arm64_mb_counter_042
-.type nc_arm64_mb_counter_042,%function
 nc_arm64_mb_counter_042:
     mov x3, x0
     mov x0, #0
@@ -1346,7 +1253,6 @@ nc_arm64_mb_counter_042:
     ret
 
 .global nc_arm64_mb_counter_043
-.type nc_arm64_mb_counter_043,%function
 nc_arm64_mb_counter_043:
     mov x3, x0
     mov x0, #0
@@ -1361,7 +1267,6 @@ nc_arm64_mb_counter_043:
     ret
 
 .global nc_arm64_mb_counter_044
-.type nc_arm64_mb_counter_044,%function
 nc_arm64_mb_counter_044:
     mov x3, x0
     mov x0, #0
@@ -1376,7 +1281,6 @@ nc_arm64_mb_counter_044:
     ret
 
 .global nc_arm64_mb_counter_045
-.type nc_arm64_mb_counter_045,%function
 nc_arm64_mb_counter_045:
     mov x3, x0
     mov x0, #0
@@ -1391,7 +1295,6 @@ nc_arm64_mb_counter_045:
     ret
 
 .global nc_arm64_mb_counter_046
-.type nc_arm64_mb_counter_046,%function
 nc_arm64_mb_counter_046:
     mov x3, x0
     mov x0, #0
@@ -1406,7 +1309,6 @@ nc_arm64_mb_counter_046:
     ret
 
 .global nc_arm64_mb_counter_047
-.type nc_arm64_mb_counter_047,%function
 nc_arm64_mb_counter_047:
     mov x3, x0
     mov x0, #0
@@ -1421,7 +1323,6 @@ nc_arm64_mb_counter_047:
     ret
 
 .global nc_arm64_mb_counter_048
-.type nc_arm64_mb_counter_048,%function
 nc_arm64_mb_counter_048:
     mov x3, x0
     mov x0, #0
@@ -1436,7 +1337,6 @@ nc_arm64_mb_counter_048:
     ret
 
 .global nc_arm64_mb_counter_049
-.type nc_arm64_mb_counter_049,%function
 nc_arm64_mb_counter_049:
     mov x3, x0
     mov x0, #0
@@ -1451,7 +1351,6 @@ nc_arm64_mb_counter_049:
     ret
 
 .global nc_arm64_mb_barrier_000
-.type nc_arm64_mb_barrier_000,%function
 nc_arm64_mb_barrier_000:
     mov x3, x0
     mov x0, #0
@@ -1467,7 +1366,6 @@ nc_arm64_mb_barrier_000:
     ret
 
 .global nc_arm64_mb_barrier_001
-.type nc_arm64_mb_barrier_001,%function
 nc_arm64_mb_barrier_001:
     mov x3, x0
     mov x0, #0
@@ -1483,7 +1381,6 @@ nc_arm64_mb_barrier_001:
     ret
 
 .global nc_arm64_mb_barrier_002
-.type nc_arm64_mb_barrier_002,%function
 nc_arm64_mb_barrier_002:
     mov x3, x0
     mov x0, #0
@@ -1499,7 +1396,6 @@ nc_arm64_mb_barrier_002:
     ret
 
 .global nc_arm64_mb_barrier_003
-.type nc_arm64_mb_barrier_003,%function
 nc_arm64_mb_barrier_003:
     mov x3, x0
     mov x0, #0
@@ -1515,7 +1411,6 @@ nc_arm64_mb_barrier_003:
     ret
 
 .global nc_arm64_mb_barrier_004
-.type nc_arm64_mb_barrier_004,%function
 nc_arm64_mb_barrier_004:
     mov x3, x0
     mov x0, #0
@@ -1531,7 +1426,6 @@ nc_arm64_mb_barrier_004:
     ret
 
 .global nc_arm64_mb_barrier_005
-.type nc_arm64_mb_barrier_005,%function
 nc_arm64_mb_barrier_005:
     mov x3, x0
     mov x0, #0
@@ -1547,7 +1441,6 @@ nc_arm64_mb_barrier_005:
     ret
 
 .global nc_arm64_mb_barrier_006
-.type nc_arm64_mb_barrier_006,%function
 nc_arm64_mb_barrier_006:
     mov x3, x0
     mov x0, #0
@@ -1563,7 +1456,6 @@ nc_arm64_mb_barrier_006:
     ret
 
 .global nc_arm64_mb_barrier_007
-.type nc_arm64_mb_barrier_007,%function
 nc_arm64_mb_barrier_007:
     mov x3, x0
     mov x0, #0
@@ -1579,7 +1471,6 @@ nc_arm64_mb_barrier_007:
     ret
 
 .global nc_arm64_mb_barrier_008
-.type nc_arm64_mb_barrier_008,%function
 nc_arm64_mb_barrier_008:
     mov x3, x0
     mov x0, #0
@@ -1595,7 +1486,6 @@ nc_arm64_mb_barrier_008:
     ret
 
 .global nc_arm64_mb_barrier_009
-.type nc_arm64_mb_barrier_009,%function
 nc_arm64_mb_barrier_009:
     mov x3, x0
     mov x0, #0
@@ -1611,7 +1501,6 @@ nc_arm64_mb_barrier_009:
     ret
 
 .global nc_arm64_mb_barrier_010
-.type nc_arm64_mb_barrier_010,%function
 nc_arm64_mb_barrier_010:
     mov x3, x0
     mov x0, #0
@@ -1627,7 +1516,6 @@ nc_arm64_mb_barrier_010:
     ret
 
 .global nc_arm64_mb_barrier_011
-.type nc_arm64_mb_barrier_011,%function
 nc_arm64_mb_barrier_011:
     mov x3, x0
     mov x0, #0
@@ -1643,7 +1531,6 @@ nc_arm64_mb_barrier_011:
     ret
 
 .global nc_arm64_mb_barrier_012
-.type nc_arm64_mb_barrier_012,%function
 nc_arm64_mb_barrier_012:
     mov x3, x0
     mov x0, #0
@@ -1659,7 +1546,6 @@ nc_arm64_mb_barrier_012:
     ret
 
 .global nc_arm64_mb_barrier_013
-.type nc_arm64_mb_barrier_013,%function
 nc_arm64_mb_barrier_013:
     mov x3, x0
     mov x0, #0
@@ -1675,7 +1561,6 @@ nc_arm64_mb_barrier_013:
     ret
 
 .global nc_arm64_mb_barrier_014
-.type nc_arm64_mb_barrier_014,%function
 nc_arm64_mb_barrier_014:
     mov x3, x0
     mov x0, #0
@@ -1691,7 +1576,6 @@ nc_arm64_mb_barrier_014:
     ret
 
 .global nc_arm64_mb_barrier_015
-.type nc_arm64_mb_barrier_015,%function
 nc_arm64_mb_barrier_015:
     mov x3, x0
     mov x0, #0
@@ -1707,7 +1591,6 @@ nc_arm64_mb_barrier_015:
     ret
 
 .global nc_arm64_mb_barrier_016
-.type nc_arm64_mb_barrier_016,%function
 nc_arm64_mb_barrier_016:
     mov x3, x0
     mov x0, #0
@@ -1723,7 +1606,6 @@ nc_arm64_mb_barrier_016:
     ret
 
 .global nc_arm64_mb_barrier_017
-.type nc_arm64_mb_barrier_017,%function
 nc_arm64_mb_barrier_017:
     mov x3, x0
     mov x0, #0
@@ -1739,7 +1621,6 @@ nc_arm64_mb_barrier_017:
     ret
 
 .global nc_arm64_mb_barrier_018
-.type nc_arm64_mb_barrier_018,%function
 nc_arm64_mb_barrier_018:
     mov x3, x0
     mov x0, #0
@@ -1755,7 +1636,6 @@ nc_arm64_mb_barrier_018:
     ret
 
 .global nc_arm64_mb_barrier_019
-.type nc_arm64_mb_barrier_019,%function
 nc_arm64_mb_barrier_019:
     mov x3, x0
     mov x0, #0
@@ -1771,7 +1651,6 @@ nc_arm64_mb_barrier_019:
     ret
 
 .global nc_arm64_mb_barrier_020
-.type nc_arm64_mb_barrier_020,%function
 nc_arm64_mb_barrier_020:
     mov x3, x0
     mov x0, #0
@@ -1787,7 +1666,6 @@ nc_arm64_mb_barrier_020:
     ret
 
 .global nc_arm64_mb_barrier_021
-.type nc_arm64_mb_barrier_021,%function
 nc_arm64_mb_barrier_021:
     mov x3, x0
     mov x0, #0
@@ -1803,7 +1681,6 @@ nc_arm64_mb_barrier_021:
     ret
 
 .global nc_arm64_mb_barrier_022
-.type nc_arm64_mb_barrier_022,%function
 nc_arm64_mb_barrier_022:
     mov x3, x0
     mov x0, #0
@@ -1819,7 +1696,6 @@ nc_arm64_mb_barrier_022:
     ret
 
 .global nc_arm64_mb_barrier_023
-.type nc_arm64_mb_barrier_023,%function
 nc_arm64_mb_barrier_023:
     mov x3, x0
     mov x0, #0
@@ -1835,7 +1711,6 @@ nc_arm64_mb_barrier_023:
     ret
 
 .global nc_arm64_mb_barrier_024
-.type nc_arm64_mb_barrier_024,%function
 nc_arm64_mb_barrier_024:
     mov x3, x0
     mov x0, #0
@@ -1851,7 +1726,6 @@ nc_arm64_mb_barrier_024:
     ret
 
 .global nc_arm64_mb_barrier_025
-.type nc_arm64_mb_barrier_025,%function
 nc_arm64_mb_barrier_025:
     mov x3, x0
     mov x0, #0
@@ -1867,7 +1741,6 @@ nc_arm64_mb_barrier_025:
     ret
 
 .global nc_arm64_mb_barrier_026
-.type nc_arm64_mb_barrier_026,%function
 nc_arm64_mb_barrier_026:
     mov x3, x0
     mov x0, #0
@@ -1883,7 +1756,6 @@ nc_arm64_mb_barrier_026:
     ret
 
 .global nc_arm64_mb_barrier_027
-.type nc_arm64_mb_barrier_027,%function
 nc_arm64_mb_barrier_027:
     mov x3, x0
     mov x0, #0
@@ -1899,7 +1771,6 @@ nc_arm64_mb_barrier_027:
     ret
 
 .global nc_arm64_mb_barrier_028
-.type nc_arm64_mb_barrier_028,%function
 nc_arm64_mb_barrier_028:
     mov x3, x0
     mov x0, #0
@@ -1915,7 +1786,6 @@ nc_arm64_mb_barrier_028:
     ret
 
 .global nc_arm64_mb_barrier_029
-.type nc_arm64_mb_barrier_029,%function
 nc_arm64_mb_barrier_029:
     mov x3, x0
     mov x0, #0
@@ -1931,7 +1801,6 @@ nc_arm64_mb_barrier_029:
     ret
 
 .global nc_arm64_mb_barrier_030
-.type nc_arm64_mb_barrier_030,%function
 nc_arm64_mb_barrier_030:
     mov x3, x0
     mov x0, #0
@@ -1947,7 +1816,6 @@ nc_arm64_mb_barrier_030:
     ret
 
 .global nc_arm64_mb_barrier_031
-.type nc_arm64_mb_barrier_031,%function
 nc_arm64_mb_barrier_031:
     mov x3, x0
     mov x0, #0
@@ -1963,7 +1831,6 @@ nc_arm64_mb_barrier_031:
     ret
 
 .global nc_arm64_mb_barrier_032
-.type nc_arm64_mb_barrier_032,%function
 nc_arm64_mb_barrier_032:
     mov x3, x0
     mov x0, #0
@@ -1979,7 +1846,6 @@ nc_arm64_mb_barrier_032:
     ret
 
 .global nc_arm64_mb_barrier_033
-.type nc_arm64_mb_barrier_033,%function
 nc_arm64_mb_barrier_033:
     mov x3, x0
     mov x0, #0
@@ -1995,7 +1861,6 @@ nc_arm64_mb_barrier_033:
     ret
 
 .global nc_arm64_mb_barrier_034
-.type nc_arm64_mb_barrier_034,%function
 nc_arm64_mb_barrier_034:
     mov x3, x0
     mov x0, #0
@@ -2011,7 +1876,6 @@ nc_arm64_mb_barrier_034:
     ret
 
 .global nc_arm64_mb_barrier_035
-.type nc_arm64_mb_barrier_035,%function
 nc_arm64_mb_barrier_035:
     mov x3, x0
     mov x0, #0
@@ -2027,7 +1891,6 @@ nc_arm64_mb_barrier_035:
     ret
 
 .global nc_arm64_mb_barrier_036
-.type nc_arm64_mb_barrier_036,%function
 nc_arm64_mb_barrier_036:
     mov x3, x0
     mov x0, #0
@@ -2043,7 +1906,6 @@ nc_arm64_mb_barrier_036:
     ret
 
 .global nc_arm64_mb_barrier_037
-.type nc_arm64_mb_barrier_037,%function
 nc_arm64_mb_barrier_037:
     mov x3, x0
     mov x0, #0
@@ -2059,7 +1921,6 @@ nc_arm64_mb_barrier_037:
     ret
 
 .global nc_arm64_mb_barrier_038
-.type nc_arm64_mb_barrier_038,%function
 nc_arm64_mb_barrier_038:
     mov x3, x0
     mov x0, #0
@@ -2075,7 +1936,6 @@ nc_arm64_mb_barrier_038:
     ret
 
 .global nc_arm64_mb_barrier_039
-.type nc_arm64_mb_barrier_039,%function
 nc_arm64_mb_barrier_039:
     mov x3, x0
     mov x0, #0
@@ -2091,7 +1951,6 @@ nc_arm64_mb_barrier_039:
     ret
 
 .global nc_arm64_mb_barrier_040
-.type nc_arm64_mb_barrier_040,%function
 nc_arm64_mb_barrier_040:
     mov x3, x0
     mov x0, #0
@@ -2107,7 +1966,6 @@ nc_arm64_mb_barrier_040:
     ret
 
 .global nc_arm64_mb_barrier_041
-.type nc_arm64_mb_barrier_041,%function
 nc_arm64_mb_barrier_041:
     mov x3, x0
     mov x0, #0
@@ -2123,7 +1981,6 @@ nc_arm64_mb_barrier_041:
     ret
 
 .global nc_arm64_mb_barrier_042
-.type nc_arm64_mb_barrier_042,%function
 nc_arm64_mb_barrier_042:
     mov x3, x0
     mov x0, #0
@@ -2139,7 +1996,6 @@ nc_arm64_mb_barrier_042:
     ret
 
 .global nc_arm64_mb_barrier_043
-.type nc_arm64_mb_barrier_043,%function
 nc_arm64_mb_barrier_043:
     mov x3, x0
     mov x0, #0
@@ -2155,7 +2011,6 @@ nc_arm64_mb_barrier_043:
     ret
 
 .global nc_arm64_mb_barrier_044
-.type nc_arm64_mb_barrier_044,%function
 nc_arm64_mb_barrier_044:
     mov x3, x0
     mov x0, #0
@@ -2171,7 +2026,6 @@ nc_arm64_mb_barrier_044:
     ret
 
 .global nc_arm64_mb_barrier_045
-.type nc_arm64_mb_barrier_045,%function
 nc_arm64_mb_barrier_045:
     mov x3, x0
     mov x0, #0
@@ -2187,7 +2041,6 @@ nc_arm64_mb_barrier_045:
     ret
 
 .global nc_arm64_mb_barrier_046
-.type nc_arm64_mb_barrier_046,%function
 nc_arm64_mb_barrier_046:
     mov x3, x0
     mov x0, #0
@@ -2203,7 +2056,6 @@ nc_arm64_mb_barrier_046:
     ret
 
 .global nc_arm64_mb_barrier_047
-.type nc_arm64_mb_barrier_047,%function
 nc_arm64_mb_barrier_047:
     mov x3, x0
     mov x0, #0
@@ -2219,7 +2071,6 @@ nc_arm64_mb_barrier_047:
     ret
 
 .global nc_arm64_mb_barrier_048
-.type nc_arm64_mb_barrier_048,%function
 nc_arm64_mb_barrier_048:
     mov x3, x0
     mov x0, #0
@@ -2235,7 +2086,6 @@ nc_arm64_mb_barrier_048:
     ret
 
 .global nc_arm64_mb_barrier_049
-.type nc_arm64_mb_barrier_049,%function
 nc_arm64_mb_barrier_049:
     mov x3, x0
     mov x0, #0
@@ -2251,7 +2101,6 @@ nc_arm64_mb_barrier_049:
     ret
 
 .global nc_arm64_mb_memory_000
-.type nc_arm64_mb_memory_000,%function
 nc_arm64_mb_memory_000:
     mov x3, x0
     mov x0, #0
@@ -2271,7 +2120,6 @@ nc_arm64_mb_memory_000:
     ret
 
 .global nc_arm64_mb_memory_001
-.type nc_arm64_mb_memory_001,%function
 nc_arm64_mb_memory_001:
     mov x3, x0
     mov x0, #0
@@ -2291,7 +2139,6 @@ nc_arm64_mb_memory_001:
     ret
 
 .global nc_arm64_mb_memory_002
-.type nc_arm64_mb_memory_002,%function
 nc_arm64_mb_memory_002:
     mov x3, x0
     mov x0, #0
@@ -2311,7 +2158,6 @@ nc_arm64_mb_memory_002:
     ret
 
 .global nc_arm64_mb_memory_003
-.type nc_arm64_mb_memory_003,%function
 nc_arm64_mb_memory_003:
     mov x3, x0
     mov x0, #0
@@ -2331,7 +2177,6 @@ nc_arm64_mb_memory_003:
     ret
 
 .global nc_arm64_mb_memory_004
-.type nc_arm64_mb_memory_004,%function
 nc_arm64_mb_memory_004:
     mov x3, x0
     mov x0, #0
@@ -2351,7 +2196,6 @@ nc_arm64_mb_memory_004:
     ret
 
 .global nc_arm64_mb_memory_005
-.type nc_arm64_mb_memory_005,%function
 nc_arm64_mb_memory_005:
     mov x3, x0
     mov x0, #0
@@ -2371,7 +2215,6 @@ nc_arm64_mb_memory_005:
     ret
 
 .global nc_arm64_mb_memory_006
-.type nc_arm64_mb_memory_006,%function
 nc_arm64_mb_memory_006:
     mov x3, x0
     mov x0, #0
@@ -2391,7 +2234,6 @@ nc_arm64_mb_memory_006:
     ret
 
 .global nc_arm64_mb_memory_007
-.type nc_arm64_mb_memory_007,%function
 nc_arm64_mb_memory_007:
     mov x3, x0
     mov x0, #0
@@ -2411,7 +2253,6 @@ nc_arm64_mb_memory_007:
     ret
 
 .global nc_arm64_mb_memory_008
-.type nc_arm64_mb_memory_008,%function
 nc_arm64_mb_memory_008:
     mov x3, x0
     mov x0, #0
@@ -2431,7 +2272,6 @@ nc_arm64_mb_memory_008:
     ret
 
 .global nc_arm64_mb_memory_009
-.type nc_arm64_mb_memory_009,%function
 nc_arm64_mb_memory_009:
     mov x3, x0
     mov x0, #0
@@ -2451,7 +2291,6 @@ nc_arm64_mb_memory_009:
     ret
 
 .global nc_arm64_mb_memory_010
-.type nc_arm64_mb_memory_010,%function
 nc_arm64_mb_memory_010:
     mov x3, x0
     mov x0, #0
@@ -2471,7 +2310,6 @@ nc_arm64_mb_memory_010:
     ret
 
 .global nc_arm64_mb_memory_011
-.type nc_arm64_mb_memory_011,%function
 nc_arm64_mb_memory_011:
     mov x3, x0
     mov x0, #0
@@ -2491,7 +2329,6 @@ nc_arm64_mb_memory_011:
     ret
 
 .global nc_arm64_mb_memory_012
-.type nc_arm64_mb_memory_012,%function
 nc_arm64_mb_memory_012:
     mov x3, x0
     mov x0, #0
@@ -2511,7 +2348,6 @@ nc_arm64_mb_memory_012:
     ret
 
 .global nc_arm64_mb_memory_013
-.type nc_arm64_mb_memory_013,%function
 nc_arm64_mb_memory_013:
     mov x3, x0
     mov x0, #0
@@ -2531,7 +2367,6 @@ nc_arm64_mb_memory_013:
     ret
 
 .global nc_arm64_mb_memory_014
-.type nc_arm64_mb_memory_014,%function
 nc_arm64_mb_memory_014:
     mov x3, x0
     mov x0, #0
@@ -2551,7 +2386,6 @@ nc_arm64_mb_memory_014:
     ret
 
 .global nc_arm64_mb_memory_015
-.type nc_arm64_mb_memory_015,%function
 nc_arm64_mb_memory_015:
     mov x3, x0
     mov x0, #0
@@ -2571,7 +2405,6 @@ nc_arm64_mb_memory_015:
     ret
 
 .global nc_arm64_mb_memory_016
-.type nc_arm64_mb_memory_016,%function
 nc_arm64_mb_memory_016:
     mov x3, x0
     mov x0, #0
@@ -2591,7 +2424,6 @@ nc_arm64_mb_memory_016:
     ret
 
 .global nc_arm64_mb_memory_017
-.type nc_arm64_mb_memory_017,%function
 nc_arm64_mb_memory_017:
     mov x3, x0
     mov x0, #0
@@ -2611,7 +2443,6 @@ nc_arm64_mb_memory_017:
     ret
 
 .global nc_arm64_mb_memory_018
-.type nc_arm64_mb_memory_018,%function
 nc_arm64_mb_memory_018:
     mov x3, x0
     mov x0, #0
@@ -2631,7 +2462,6 @@ nc_arm64_mb_memory_018:
     ret
 
 .global nc_arm64_mb_memory_019
-.type nc_arm64_mb_memory_019,%function
 nc_arm64_mb_memory_019:
     mov x3, x0
     mov x0, #0
@@ -2651,7 +2481,6 @@ nc_arm64_mb_memory_019:
     ret
 
 .global nc_arm64_mb_memory_020
-.type nc_arm64_mb_memory_020,%function
 nc_arm64_mb_memory_020:
     mov x3, x0
     mov x0, #0
@@ -2671,7 +2500,6 @@ nc_arm64_mb_memory_020:
     ret
 
 .global nc_arm64_mb_memory_021
-.type nc_arm64_mb_memory_021,%function
 nc_arm64_mb_memory_021:
     mov x3, x0
     mov x0, #0
@@ -2691,7 +2519,6 @@ nc_arm64_mb_memory_021:
     ret
 
 .global nc_arm64_mb_memory_022
-.type nc_arm64_mb_memory_022,%function
 nc_arm64_mb_memory_022:
     mov x3, x0
     mov x0, #0
@@ -2711,7 +2538,6 @@ nc_arm64_mb_memory_022:
     ret
 
 .global nc_arm64_mb_memory_023
-.type nc_arm64_mb_memory_023,%function
 nc_arm64_mb_memory_023:
     mov x3, x0
     mov x0, #0
@@ -2731,7 +2557,6 @@ nc_arm64_mb_memory_023:
     ret
 
 .global nc_arm64_mb_memory_024
-.type nc_arm64_mb_memory_024,%function
 nc_arm64_mb_memory_024:
     mov x3, x0
     mov x0, #0
@@ -2751,7 +2576,6 @@ nc_arm64_mb_memory_024:
     ret
 
 .global nc_arm64_mb_memory_025
-.type nc_arm64_mb_memory_025,%function
 nc_arm64_mb_memory_025:
     mov x3, x0
     mov x0, #0
@@ -2771,7 +2595,6 @@ nc_arm64_mb_memory_025:
     ret
 
 .global nc_arm64_mb_memory_026
-.type nc_arm64_mb_memory_026,%function
 nc_arm64_mb_memory_026:
     mov x3, x0
     mov x0, #0
@@ -2791,7 +2614,6 @@ nc_arm64_mb_memory_026:
     ret
 
 .global nc_arm64_mb_memory_027
-.type nc_arm64_mb_memory_027,%function
 nc_arm64_mb_memory_027:
     mov x3, x0
     mov x0, #0
@@ -2811,7 +2633,6 @@ nc_arm64_mb_memory_027:
     ret
 
 .global nc_arm64_mb_memory_028
-.type nc_arm64_mb_memory_028,%function
 nc_arm64_mb_memory_028:
     mov x3, x0
     mov x0, #0
@@ -2831,7 +2652,6 @@ nc_arm64_mb_memory_028:
     ret
 
 .global nc_arm64_mb_memory_029
-.type nc_arm64_mb_memory_029,%function
 nc_arm64_mb_memory_029:
     mov x3, x0
     mov x0, #0
@@ -2851,7 +2671,6 @@ nc_arm64_mb_memory_029:
     ret
 
 .global nc_arm64_mb_memory_030
-.type nc_arm64_mb_memory_030,%function
 nc_arm64_mb_memory_030:
     mov x3, x0
     mov x0, #0
@@ -2871,7 +2690,6 @@ nc_arm64_mb_memory_030:
     ret
 
 .global nc_arm64_mb_memory_031
-.type nc_arm64_mb_memory_031,%function
 nc_arm64_mb_memory_031:
     mov x3, x0
     mov x0, #0
@@ -2891,7 +2709,6 @@ nc_arm64_mb_memory_031:
     ret
 
 .global nc_arm64_mb_memory_032
-.type nc_arm64_mb_memory_032,%function
 nc_arm64_mb_memory_032:
     mov x3, x0
     mov x0, #0
@@ -2911,7 +2728,6 @@ nc_arm64_mb_memory_032:
     ret
 
 .global nc_arm64_mb_memory_033
-.type nc_arm64_mb_memory_033,%function
 nc_arm64_mb_memory_033:
     mov x3, x0
     mov x0, #0
@@ -2931,7 +2747,6 @@ nc_arm64_mb_memory_033:
     ret
 
 .global nc_arm64_mb_memory_034
-.type nc_arm64_mb_memory_034,%function
 nc_arm64_mb_memory_034:
     mov x3, x0
     mov x0, #0
@@ -2951,7 +2766,6 @@ nc_arm64_mb_memory_034:
     ret
 
 .global nc_arm64_mb_memory_035
-.type nc_arm64_mb_memory_035,%function
 nc_arm64_mb_memory_035:
     mov x3, x0
     mov x0, #0
@@ -2971,7 +2785,6 @@ nc_arm64_mb_memory_035:
     ret
 
 .global nc_arm64_mb_memory_036
-.type nc_arm64_mb_memory_036,%function
 nc_arm64_mb_memory_036:
     mov x3, x0
     mov x0, #0
@@ -2991,7 +2804,6 @@ nc_arm64_mb_memory_036:
     ret
 
 .global nc_arm64_mb_memory_037
-.type nc_arm64_mb_memory_037,%function
 nc_arm64_mb_memory_037:
     mov x3, x0
     mov x0, #0
@@ -3011,7 +2823,6 @@ nc_arm64_mb_memory_037:
     ret
 
 .global nc_arm64_mb_memory_038
-.type nc_arm64_mb_memory_038,%function
 nc_arm64_mb_memory_038:
     mov x3, x0
     mov x0, #0
@@ -3031,7 +2842,6 @@ nc_arm64_mb_memory_038:
     ret
 
 .global nc_arm64_mb_memory_039
-.type nc_arm64_mb_memory_039,%function
 nc_arm64_mb_memory_039:
     mov x3, x0
     mov x0, #0
@@ -3051,7 +2861,6 @@ nc_arm64_mb_memory_039:
     ret
 
 .global nc_arm64_mb_memory_040
-.type nc_arm64_mb_memory_040,%function
 nc_arm64_mb_memory_040:
     mov x3, x0
     mov x0, #0
@@ -3071,7 +2880,6 @@ nc_arm64_mb_memory_040:
     ret
 
 .global nc_arm64_mb_memory_041
-.type nc_arm64_mb_memory_041,%function
 nc_arm64_mb_memory_041:
     mov x3, x0
     mov x0, #0
@@ -3091,7 +2899,6 @@ nc_arm64_mb_memory_041:
     ret
 
 .global nc_arm64_mb_memory_042
-.type nc_arm64_mb_memory_042,%function
 nc_arm64_mb_memory_042:
     mov x3, x0
     mov x0, #0
@@ -3111,7 +2918,6 @@ nc_arm64_mb_memory_042:
     ret
 
 .global nc_arm64_mb_memory_043
-.type nc_arm64_mb_memory_043,%function
 nc_arm64_mb_memory_043:
     mov x3, x0
     mov x0, #0
@@ -3131,7 +2937,6 @@ nc_arm64_mb_memory_043:
     ret
 
 .global nc_arm64_mb_memory_044
-.type nc_arm64_mb_memory_044,%function
 nc_arm64_mb_memory_044:
     mov x3, x0
     mov x0, #0
@@ -3151,7 +2956,6 @@ nc_arm64_mb_memory_044:
     ret
 
 .global nc_arm64_mb_memory_045
-.type nc_arm64_mb_memory_045,%function
 nc_arm64_mb_memory_045:
     mov x3, x0
     mov x0, #0
@@ -3171,7 +2975,6 @@ nc_arm64_mb_memory_045:
     ret
 
 .global nc_arm64_mb_memory_046
-.type nc_arm64_mb_memory_046,%function
 nc_arm64_mb_memory_046:
     mov x3, x0
     mov x0, #0
@@ -3191,7 +2994,6 @@ nc_arm64_mb_memory_046:
     ret
 
 .global nc_arm64_mb_memory_047
-.type nc_arm64_mb_memory_047,%function
 nc_arm64_mb_memory_047:
     mov x3, x0
     mov x0, #0
@@ -3211,7 +3013,6 @@ nc_arm64_mb_memory_047:
     ret
 
 .global nc_arm64_mb_memory_048
-.type nc_arm64_mb_memory_048,%function
 nc_arm64_mb_memory_048:
     mov x3, x0
     mov x0, #0
@@ -3231,7 +3032,6 @@ nc_arm64_mb_memory_048:
     ret
 
 .global nc_arm64_mb_memory_049
-.type nc_arm64_mb_memory_049,%function
 nc_arm64_mb_memory_049:
     mov x3, x0
     mov x0, #0
@@ -3251,7 +3051,6 @@ nc_arm64_mb_memory_049:
     ret
 
 .global nc_arm64_mb_neon_000
-.type nc_arm64_mb_neon_000,%function
 nc_arm64_mb_neon_000:
     mov x3, x0
     mov x0, #0
@@ -3269,7 +3068,6 @@ nc_arm64_mb_neon_000:
     ret
 
 .global nc_arm64_mb_neon_001
-.type nc_arm64_mb_neon_001,%function
 nc_arm64_mb_neon_001:
     mov x3, x0
     mov x0, #0
@@ -3287,7 +3085,6 @@ nc_arm64_mb_neon_001:
     ret
 
 .global nc_arm64_mb_neon_002
-.type nc_arm64_mb_neon_002,%function
 nc_arm64_mb_neon_002:
     mov x3, x0
     mov x0, #0
@@ -3305,7 +3102,6 @@ nc_arm64_mb_neon_002:
     ret
 
 .global nc_arm64_mb_neon_003
-.type nc_arm64_mb_neon_003,%function
 nc_arm64_mb_neon_003:
     mov x3, x0
     mov x0, #0
@@ -3323,7 +3119,6 @@ nc_arm64_mb_neon_003:
     ret
 
 .global nc_arm64_mb_neon_004
-.type nc_arm64_mb_neon_004,%function
 nc_arm64_mb_neon_004:
     mov x3, x0
     mov x0, #0
@@ -3341,7 +3136,6 @@ nc_arm64_mb_neon_004:
     ret
 
 .global nc_arm64_mb_neon_005
-.type nc_arm64_mb_neon_005,%function
 nc_arm64_mb_neon_005:
     mov x3, x0
     mov x0, #0
@@ -3359,7 +3153,6 @@ nc_arm64_mb_neon_005:
     ret
 
 .global nc_arm64_mb_neon_006
-.type nc_arm64_mb_neon_006,%function
 nc_arm64_mb_neon_006:
     mov x3, x0
     mov x0, #0
@@ -3377,7 +3170,6 @@ nc_arm64_mb_neon_006:
     ret
 
 .global nc_arm64_mb_neon_007
-.type nc_arm64_mb_neon_007,%function
 nc_arm64_mb_neon_007:
     mov x3, x0
     mov x0, #0
@@ -3395,7 +3187,6 @@ nc_arm64_mb_neon_007:
     ret
 
 .global nc_arm64_mb_neon_008
-.type nc_arm64_mb_neon_008,%function
 nc_arm64_mb_neon_008:
     mov x3, x0
     mov x0, #0
@@ -3413,7 +3204,6 @@ nc_arm64_mb_neon_008:
     ret
 
 .global nc_arm64_mb_neon_009
-.type nc_arm64_mb_neon_009,%function
 nc_arm64_mb_neon_009:
     mov x3, x0
     mov x0, #0
@@ -3431,7 +3221,6 @@ nc_arm64_mb_neon_009:
     ret
 
 .global nc_arm64_mb_neon_010
-.type nc_arm64_mb_neon_010,%function
 nc_arm64_mb_neon_010:
     mov x3, x0
     mov x0, #0
@@ -3449,7 +3238,6 @@ nc_arm64_mb_neon_010:
     ret
 
 .global nc_arm64_mb_neon_011
-.type nc_arm64_mb_neon_011,%function
 nc_arm64_mb_neon_011:
     mov x3, x0
     mov x0, #0
@@ -3467,7 +3255,6 @@ nc_arm64_mb_neon_011:
     ret
 
 .global nc_arm64_mb_neon_012
-.type nc_arm64_mb_neon_012,%function
 nc_arm64_mb_neon_012:
     mov x3, x0
     mov x0, #0
@@ -3485,7 +3272,6 @@ nc_arm64_mb_neon_012:
     ret
 
 .global nc_arm64_mb_neon_013
-.type nc_arm64_mb_neon_013,%function
 nc_arm64_mb_neon_013:
     mov x3, x0
     mov x0, #0
@@ -3503,7 +3289,6 @@ nc_arm64_mb_neon_013:
     ret
 
 .global nc_arm64_mb_neon_014
-.type nc_arm64_mb_neon_014,%function
 nc_arm64_mb_neon_014:
     mov x3, x0
     mov x0, #0
@@ -3521,7 +3306,6 @@ nc_arm64_mb_neon_014:
     ret
 
 .global nc_arm64_mb_neon_015
-.type nc_arm64_mb_neon_015,%function
 nc_arm64_mb_neon_015:
     mov x3, x0
     mov x0, #0
@@ -3539,7 +3323,6 @@ nc_arm64_mb_neon_015:
     ret
 
 .global nc_arm64_mb_neon_016
-.type nc_arm64_mb_neon_016,%function
 nc_arm64_mb_neon_016:
     mov x3, x0
     mov x0, #0
@@ -3557,7 +3340,6 @@ nc_arm64_mb_neon_016:
     ret
 
 .global nc_arm64_mb_neon_017
-.type nc_arm64_mb_neon_017,%function
 nc_arm64_mb_neon_017:
     mov x3, x0
     mov x0, #0
@@ -3575,7 +3357,6 @@ nc_arm64_mb_neon_017:
     ret
 
 .global nc_arm64_mb_neon_018
-.type nc_arm64_mb_neon_018,%function
 nc_arm64_mb_neon_018:
     mov x3, x0
     mov x0, #0
@@ -3593,7 +3374,6 @@ nc_arm64_mb_neon_018:
     ret
 
 .global nc_arm64_mb_neon_019
-.type nc_arm64_mb_neon_019,%function
 nc_arm64_mb_neon_019:
     mov x3, x0
     mov x0, #0
@@ -3611,7 +3391,6 @@ nc_arm64_mb_neon_019:
     ret
 
 .global nc_arm64_mb_neon_020
-.type nc_arm64_mb_neon_020,%function
 nc_arm64_mb_neon_020:
     mov x3, x0
     mov x0, #0
@@ -3629,7 +3408,6 @@ nc_arm64_mb_neon_020:
     ret
 
 .global nc_arm64_mb_neon_021
-.type nc_arm64_mb_neon_021,%function
 nc_arm64_mb_neon_021:
     mov x3, x0
     mov x0, #0
@@ -3647,7 +3425,6 @@ nc_arm64_mb_neon_021:
     ret
 
 .global nc_arm64_mb_neon_022
-.type nc_arm64_mb_neon_022,%function
 nc_arm64_mb_neon_022:
     mov x3, x0
     mov x0, #0
@@ -3665,7 +3442,6 @@ nc_arm64_mb_neon_022:
     ret
 
 .global nc_arm64_mb_neon_023
-.type nc_arm64_mb_neon_023,%function
 nc_arm64_mb_neon_023:
     mov x3, x0
     mov x0, #0
@@ -3683,7 +3459,6 @@ nc_arm64_mb_neon_023:
     ret
 
 .global nc_arm64_mb_neon_024
-.type nc_arm64_mb_neon_024,%function
 nc_arm64_mb_neon_024:
     mov x3, x0
     mov x0, #0
@@ -3701,7 +3476,6 @@ nc_arm64_mb_neon_024:
     ret
 
 .global nc_arm64_mb_neon_025
-.type nc_arm64_mb_neon_025,%function
 nc_arm64_mb_neon_025:
     mov x3, x0
     mov x0, #0
@@ -3719,7 +3493,6 @@ nc_arm64_mb_neon_025:
     ret
 
 .global nc_arm64_mb_neon_026
-.type nc_arm64_mb_neon_026,%function
 nc_arm64_mb_neon_026:
     mov x3, x0
     mov x0, #0
@@ -3737,7 +3510,6 @@ nc_arm64_mb_neon_026:
     ret
 
 .global nc_arm64_mb_neon_027
-.type nc_arm64_mb_neon_027,%function
 nc_arm64_mb_neon_027:
     mov x3, x0
     mov x0, #0
@@ -3755,7 +3527,6 @@ nc_arm64_mb_neon_027:
     ret
 
 .global nc_arm64_mb_neon_028
-.type nc_arm64_mb_neon_028,%function
 nc_arm64_mb_neon_028:
     mov x3, x0
     mov x0, #0
@@ -3773,7 +3544,6 @@ nc_arm64_mb_neon_028:
     ret
 
 .global nc_arm64_mb_neon_029
-.type nc_arm64_mb_neon_029,%function
 nc_arm64_mb_neon_029:
     mov x3, x0
     mov x0, #0
@@ -3791,7 +3561,6 @@ nc_arm64_mb_neon_029:
     ret
 
 .global nc_arm64_mb_neon_030
-.type nc_arm64_mb_neon_030,%function
 nc_arm64_mb_neon_030:
     mov x3, x0
     mov x0, #0
@@ -3809,7 +3578,6 @@ nc_arm64_mb_neon_030:
     ret
 
 .global nc_arm64_mb_neon_031
-.type nc_arm64_mb_neon_031,%function
 nc_arm64_mb_neon_031:
     mov x3, x0
     mov x0, #0
@@ -3827,7 +3595,6 @@ nc_arm64_mb_neon_031:
     ret
 
 .global nc_arm64_mb_neon_032
-.type nc_arm64_mb_neon_032,%function
 nc_arm64_mb_neon_032:
     mov x3, x0
     mov x0, #0
@@ -3845,7 +3612,6 @@ nc_arm64_mb_neon_032:
     ret
 
 .global nc_arm64_mb_neon_033
-.type nc_arm64_mb_neon_033,%function
 nc_arm64_mb_neon_033:
     mov x3, x0
     mov x0, #0
@@ -3863,7 +3629,6 @@ nc_arm64_mb_neon_033:
     ret
 
 .global nc_arm64_mb_neon_034
-.type nc_arm64_mb_neon_034,%function
 nc_arm64_mb_neon_034:
     mov x3, x0
     mov x0, #0
@@ -3881,7 +3646,6 @@ nc_arm64_mb_neon_034:
     ret
 
 .global nc_arm64_mb_neon_035
-.type nc_arm64_mb_neon_035,%function
 nc_arm64_mb_neon_035:
     mov x3, x0
     mov x0, #0
@@ -3899,7 +3663,6 @@ nc_arm64_mb_neon_035:
     ret
 
 .global nc_arm64_mb_neon_036
-.type nc_arm64_mb_neon_036,%function
 nc_arm64_mb_neon_036:
     mov x3, x0
     mov x0, #0
@@ -3917,7 +3680,6 @@ nc_arm64_mb_neon_036:
     ret
 
 .global nc_arm64_mb_neon_037
-.type nc_arm64_mb_neon_037,%function
 nc_arm64_mb_neon_037:
     mov x3, x0
     mov x0, #0
@@ -3935,7 +3697,6 @@ nc_arm64_mb_neon_037:
     ret
 
 .global nc_arm64_mb_neon_038
-.type nc_arm64_mb_neon_038,%function
 nc_arm64_mb_neon_038:
     mov x3, x0
     mov x0, #0
@@ -3953,7 +3714,6 @@ nc_arm64_mb_neon_038:
     ret
 
 .global nc_arm64_mb_neon_039
-.type nc_arm64_mb_neon_039,%function
 nc_arm64_mb_neon_039:
     mov x3, x0
     mov x0, #0
@@ -3971,7 +3731,6 @@ nc_arm64_mb_neon_039:
     ret
 
 .global nc_arm64_mb_neon_040
-.type nc_arm64_mb_neon_040,%function
 nc_arm64_mb_neon_040:
     mov x3, x0
     mov x0, #0
@@ -3989,7 +3748,6 @@ nc_arm64_mb_neon_040:
     ret
 
 .global nc_arm64_mb_neon_041
-.type nc_arm64_mb_neon_041,%function
 nc_arm64_mb_neon_041:
     mov x3, x0
     mov x0, #0
@@ -4007,7 +3765,6 @@ nc_arm64_mb_neon_041:
     ret
 
 .global nc_arm64_mb_neon_042
-.type nc_arm64_mb_neon_042,%function
 nc_arm64_mb_neon_042:
     mov x3, x0
     mov x0, #0
@@ -4025,7 +3782,6 @@ nc_arm64_mb_neon_042:
     ret
 
 .global nc_arm64_mb_neon_043
-.type nc_arm64_mb_neon_043,%function
 nc_arm64_mb_neon_043:
     mov x3, x0
     mov x0, #0
@@ -4043,7 +3799,6 @@ nc_arm64_mb_neon_043:
     ret
 
 .global nc_arm64_mb_neon_044
-.type nc_arm64_mb_neon_044,%function
 nc_arm64_mb_neon_044:
     mov x3, x0
     mov x0, #0
@@ -4061,7 +3816,6 @@ nc_arm64_mb_neon_044:
     ret
 
 .global nc_arm64_mb_neon_045
-.type nc_arm64_mb_neon_045,%function
 nc_arm64_mb_neon_045:
     mov x3, x0
     mov x0, #0
@@ -4079,7 +3833,6 @@ nc_arm64_mb_neon_045:
     ret
 
 .global nc_arm64_mb_neon_046
-.type nc_arm64_mb_neon_046,%function
 nc_arm64_mb_neon_046:
     mov x3, x0
     mov x0, #0
@@ -4097,7 +3850,6 @@ nc_arm64_mb_neon_046:
     ret
 
 .global nc_arm64_mb_neon_047
-.type nc_arm64_mb_neon_047,%function
 nc_arm64_mb_neon_047:
     mov x3, x0
     mov x0, #0
@@ -4115,7 +3867,6 @@ nc_arm64_mb_neon_047:
     ret
 
 .global nc_arm64_mb_neon_048
-.type nc_arm64_mb_neon_048,%function
 nc_arm64_mb_neon_048:
     mov x3, x0
     mov x0, #0
@@ -4133,7 +3884,6 @@ nc_arm64_mb_neon_048:
     ret
 
 .global nc_arm64_mb_neon_049
-.type nc_arm64_mb_neon_049,%function
 nc_arm64_mb_neon_049:
     mov x3, x0
     mov x0, #0
@@ -4151,7 +3901,6 @@ nc_arm64_mb_neon_049:
     ret
 
 .global nc_arm64_mb_branch_000
-.type nc_arm64_mb_branch_000,%function
 nc_arm64_mb_branch_000:
     mov x3, x0
     mov x0, #0
@@ -4169,7 +3918,6 @@ nc_arm64_mb_branch_000:
     ret
 
 .global nc_arm64_mb_branch_001
-.type nc_arm64_mb_branch_001,%function
 nc_arm64_mb_branch_001:
     mov x3, x0
     mov x0, #0
@@ -4187,7 +3935,6 @@ nc_arm64_mb_branch_001:
     ret
 
 .global nc_arm64_mb_branch_002
-.type nc_arm64_mb_branch_002,%function
 nc_arm64_mb_branch_002:
     mov x3, x0
     mov x0, #0
@@ -4205,7 +3952,6 @@ nc_arm64_mb_branch_002:
     ret
 
 .global nc_arm64_mb_branch_003
-.type nc_arm64_mb_branch_003,%function
 nc_arm64_mb_branch_003:
     mov x3, x0
     mov x0, #0
@@ -4223,7 +3969,6 @@ nc_arm64_mb_branch_003:
     ret
 
 .global nc_arm64_mb_branch_004
-.type nc_arm64_mb_branch_004,%function
 nc_arm64_mb_branch_004:
     mov x3, x0
     mov x0, #0
@@ -4241,7 +3986,6 @@ nc_arm64_mb_branch_004:
     ret
 
 .global nc_arm64_mb_branch_005
-.type nc_arm64_mb_branch_005,%function
 nc_arm64_mb_branch_005:
     mov x3, x0
     mov x0, #0
@@ -4259,7 +4003,6 @@ nc_arm64_mb_branch_005:
     ret
 
 .global nc_arm64_mb_branch_006
-.type nc_arm64_mb_branch_006,%function
 nc_arm64_mb_branch_006:
     mov x3, x0
     mov x0, #0
@@ -4277,7 +4020,6 @@ nc_arm64_mb_branch_006:
     ret
 
 .global nc_arm64_mb_branch_007
-.type nc_arm64_mb_branch_007,%function
 nc_arm64_mb_branch_007:
     mov x3, x0
     mov x0, #0
@@ -4295,7 +4037,6 @@ nc_arm64_mb_branch_007:
     ret
 
 .global nc_arm64_mb_branch_008
-.type nc_arm64_mb_branch_008,%function
 nc_arm64_mb_branch_008:
     mov x3, x0
     mov x0, #0
@@ -4313,7 +4054,6 @@ nc_arm64_mb_branch_008:
     ret
 
 .global nc_arm64_mb_branch_009
-.type nc_arm64_mb_branch_009,%function
 nc_arm64_mb_branch_009:
     mov x3, x0
     mov x0, #0
@@ -4331,7 +4071,6 @@ nc_arm64_mb_branch_009:
     ret
 
 .global nc_arm64_mb_branch_010
-.type nc_arm64_mb_branch_010,%function
 nc_arm64_mb_branch_010:
     mov x3, x0
     mov x0, #0
@@ -4349,7 +4088,6 @@ nc_arm64_mb_branch_010:
     ret
 
 .global nc_arm64_mb_branch_011
-.type nc_arm64_mb_branch_011,%function
 nc_arm64_mb_branch_011:
     mov x3, x0
     mov x0, #0
@@ -4367,7 +4105,6 @@ nc_arm64_mb_branch_011:
     ret
 
 .global nc_arm64_mb_branch_012
-.type nc_arm64_mb_branch_012,%function
 nc_arm64_mb_branch_012:
     mov x3, x0
     mov x0, #0
@@ -4385,7 +4122,6 @@ nc_arm64_mb_branch_012:
     ret
 
 .global nc_arm64_mb_branch_013
-.type nc_arm64_mb_branch_013,%function
 nc_arm64_mb_branch_013:
     mov x3, x0
     mov x0, #0
@@ -4403,7 +4139,6 @@ nc_arm64_mb_branch_013:
     ret
 
 .global nc_arm64_mb_branch_014
-.type nc_arm64_mb_branch_014,%function
 nc_arm64_mb_branch_014:
     mov x3, x0
     mov x0, #0
@@ -4421,7 +4156,6 @@ nc_arm64_mb_branch_014:
     ret
 
 .global nc_arm64_mb_branch_015
-.type nc_arm64_mb_branch_015,%function
 nc_arm64_mb_branch_015:
     mov x3, x0
     mov x0, #0
@@ -4439,7 +4173,6 @@ nc_arm64_mb_branch_015:
     ret
 
 .global nc_arm64_mb_branch_016
-.type nc_arm64_mb_branch_016,%function
 nc_arm64_mb_branch_016:
     mov x3, x0
     mov x0, #0
@@ -4457,7 +4190,6 @@ nc_arm64_mb_branch_016:
     ret
 
 .global nc_arm64_mb_branch_017
-.type nc_arm64_mb_branch_017,%function
 nc_arm64_mb_branch_017:
     mov x3, x0
     mov x0, #0
@@ -4475,7 +4207,6 @@ nc_arm64_mb_branch_017:
     ret
 
 .global nc_arm64_mb_branch_018
-.type nc_arm64_mb_branch_018,%function
 nc_arm64_mb_branch_018:
     mov x3, x0
     mov x0, #0
@@ -4493,7 +4224,6 @@ nc_arm64_mb_branch_018:
     ret
 
 .global nc_arm64_mb_branch_019
-.type nc_arm64_mb_branch_019,%function
 nc_arm64_mb_branch_019:
     mov x3, x0
     mov x0, #0
@@ -4511,7 +4241,6 @@ nc_arm64_mb_branch_019:
     ret
 
 .global nc_arm64_mb_branch_020
-.type nc_arm64_mb_branch_020,%function
 nc_arm64_mb_branch_020:
     mov x3, x0
     mov x0, #0
@@ -4529,7 +4258,6 @@ nc_arm64_mb_branch_020:
     ret
 
 .global nc_arm64_mb_branch_021
-.type nc_arm64_mb_branch_021,%function
 nc_arm64_mb_branch_021:
     mov x3, x0
     mov x0, #0
@@ -4547,7 +4275,6 @@ nc_arm64_mb_branch_021:
     ret
 
 .global nc_arm64_mb_branch_022
-.type nc_arm64_mb_branch_022,%function
 nc_arm64_mb_branch_022:
     mov x3, x0
     mov x0, #0
@@ -4565,7 +4292,6 @@ nc_arm64_mb_branch_022:
     ret
 
 .global nc_arm64_mb_branch_023
-.type nc_arm64_mb_branch_023,%function
 nc_arm64_mb_branch_023:
     mov x3, x0
     mov x0, #0
@@ -4583,7 +4309,6 @@ nc_arm64_mb_branch_023:
     ret
 
 .global nc_arm64_mb_branch_024
-.type nc_arm64_mb_branch_024,%function
 nc_arm64_mb_branch_024:
     mov x3, x0
     mov x0, #0
@@ -4601,7 +4326,6 @@ nc_arm64_mb_branch_024:
     ret
 
 .global nc_arm64_mb_branch_025
-.type nc_arm64_mb_branch_025,%function
 nc_arm64_mb_branch_025:
     mov x3, x0
     mov x0, #0
@@ -4619,7 +4343,6 @@ nc_arm64_mb_branch_025:
     ret
 
 .global nc_arm64_mb_branch_026
-.type nc_arm64_mb_branch_026,%function
 nc_arm64_mb_branch_026:
     mov x3, x0
     mov x0, #0
@@ -4637,7 +4360,6 @@ nc_arm64_mb_branch_026:
     ret
 
 .global nc_arm64_mb_branch_027
-.type nc_arm64_mb_branch_027,%function
 nc_arm64_mb_branch_027:
     mov x3, x0
     mov x0, #0
@@ -4655,7 +4377,6 @@ nc_arm64_mb_branch_027:
     ret
 
 .global nc_arm64_mb_branch_028
-.type nc_arm64_mb_branch_028,%function
 nc_arm64_mb_branch_028:
     mov x3, x0
     mov x0, #0
@@ -4673,7 +4394,6 @@ nc_arm64_mb_branch_028:
     ret
 
 .global nc_arm64_mb_branch_029
-.type nc_arm64_mb_branch_029,%function
 nc_arm64_mb_branch_029:
     mov x3, x0
     mov x0, #0
@@ -4691,7 +4411,6 @@ nc_arm64_mb_branch_029:
     ret
 
 .global nc_arm64_mb_branch_030
-.type nc_arm64_mb_branch_030,%function
 nc_arm64_mb_branch_030:
     mov x3, x0
     mov x0, #0
@@ -4709,7 +4428,6 @@ nc_arm64_mb_branch_030:
     ret
 
 .global nc_arm64_mb_branch_031
-.type nc_arm64_mb_branch_031,%function
 nc_arm64_mb_branch_031:
     mov x3, x0
     mov x0, #0
@@ -4727,7 +4445,6 @@ nc_arm64_mb_branch_031:
     ret
 
 .global nc_arm64_mb_branch_032
-.type nc_arm64_mb_branch_032,%function
 nc_arm64_mb_branch_032:
     mov x3, x0
     mov x0, #0
@@ -4745,7 +4462,6 @@ nc_arm64_mb_branch_032:
     ret
 
 .global nc_arm64_mb_branch_033
-.type nc_arm64_mb_branch_033,%function
 nc_arm64_mb_branch_033:
     mov x3, x0
     mov x0, #0
@@ -4763,7 +4479,6 @@ nc_arm64_mb_branch_033:
     ret
 
 .global nc_arm64_mb_branch_034
-.type nc_arm64_mb_branch_034,%function
 nc_arm64_mb_branch_034:
     mov x3, x0
     mov x0, #0
@@ -4781,7 +4496,6 @@ nc_arm64_mb_branch_034:
     ret
 
 .global nc_arm64_mb_branch_035
-.type nc_arm64_mb_branch_035,%function
 nc_arm64_mb_branch_035:
     mov x3, x0
     mov x0, #0
@@ -4799,7 +4513,6 @@ nc_arm64_mb_branch_035:
     ret
 
 .global nc_arm64_mb_branch_036
-.type nc_arm64_mb_branch_036,%function
 nc_arm64_mb_branch_036:
     mov x3, x0
     mov x0, #0
@@ -4817,7 +4530,6 @@ nc_arm64_mb_branch_036:
     ret
 
 .global nc_arm64_mb_branch_037
-.type nc_arm64_mb_branch_037,%function
 nc_arm64_mb_branch_037:
     mov x3, x0
     mov x0, #0
@@ -4835,7 +4547,6 @@ nc_arm64_mb_branch_037:
     ret
 
 .global nc_arm64_mb_branch_038
-.type nc_arm64_mb_branch_038,%function
 nc_arm64_mb_branch_038:
     mov x3, x0
     mov x0, #0
@@ -4853,7 +4564,6 @@ nc_arm64_mb_branch_038:
     ret
 
 .global nc_arm64_mb_branch_039
-.type nc_arm64_mb_branch_039,%function
 nc_arm64_mb_branch_039:
     mov x3, x0
     mov x0, #0
@@ -4871,7 +4581,6 @@ nc_arm64_mb_branch_039:
     ret
 
 .global nc_arm64_mb_branch_040
-.type nc_arm64_mb_branch_040,%function
 nc_arm64_mb_branch_040:
     mov x3, x0
     mov x0, #0
@@ -4889,7 +4598,6 @@ nc_arm64_mb_branch_040:
     ret
 
 .global nc_arm64_mb_branch_041
-.type nc_arm64_mb_branch_041,%function
 nc_arm64_mb_branch_041:
     mov x3, x0
     mov x0, #0
@@ -4907,7 +4615,6 @@ nc_arm64_mb_branch_041:
     ret
 
 .global nc_arm64_mb_branch_042
-.type nc_arm64_mb_branch_042,%function
 nc_arm64_mb_branch_042:
     mov x3, x0
     mov x0, #0
@@ -4925,7 +4632,6 @@ nc_arm64_mb_branch_042:
     ret
 
 .global nc_arm64_mb_branch_043
-.type nc_arm64_mb_branch_043,%function
 nc_arm64_mb_branch_043:
     mov x3, x0
     mov x0, #0
@@ -4943,7 +4649,6 @@ nc_arm64_mb_branch_043:
     ret
 
 .global nc_arm64_mb_branch_044
-.type nc_arm64_mb_branch_044,%function
 nc_arm64_mb_branch_044:
     mov x3, x0
     mov x0, #0
@@ -4961,7 +4666,6 @@ nc_arm64_mb_branch_044:
     ret
 
 .global nc_arm64_mb_branch_045
-.type nc_arm64_mb_branch_045,%function
 nc_arm64_mb_branch_045:
     mov x3, x0
     mov x0, #0
@@ -4979,7 +4683,6 @@ nc_arm64_mb_branch_045:
     ret
 
 .global nc_arm64_mb_branch_046
-.type nc_arm64_mb_branch_046,%function
 nc_arm64_mb_branch_046:
     mov x3, x0
     mov x0, #0
@@ -4997,7 +4700,6 @@ nc_arm64_mb_branch_046:
     ret
 
 .global nc_arm64_mb_branch_047
-.type nc_arm64_mb_branch_047,%function
 nc_arm64_mb_branch_047:
     mov x3, x0
     mov x0, #0
@@ -5015,7 +4717,6 @@ nc_arm64_mb_branch_047:
     ret
 
 .global nc_arm64_mb_branch_048
-.type nc_arm64_mb_branch_048,%function
 nc_arm64_mb_branch_048:
     mov x3, x0
     mov x0, #0
@@ -5033,7 +4734,6 @@ nc_arm64_mb_branch_048:
     ret
 
 .global nc_arm64_mb_branch_049
-.type nc_arm64_mb_branch_049,%function
 nc_arm64_mb_branch_049:
     mov x3, x0
     mov x0, #0

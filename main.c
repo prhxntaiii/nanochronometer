@@ -50,8 +50,10 @@
 #endif
 #include <mmsystem.h>
 #include <commdlg.h>
-#include <immintrin.h>
-#include <wmmintrin.h>
+#if defined(_M_X64) || defined(_M_IX86) || defined(__x86_64__) || defined(__i386__)
+#  include <immintrin.h>
+#  include <wmmintrin.h>
+#endif
 
 #if defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL) || \
     defined(NC_CRYPTO_BACKEND_OPENSSL) || defined(NC_CRYPTO_BACKEND_BOTH)

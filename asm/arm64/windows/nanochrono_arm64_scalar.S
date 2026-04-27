@@ -23,7 +23,6 @@ nc_arm64_cntfrq:
     ret
 
 .global nc_arm64_pmccntr_el0
-.type nc_arm64_pmccntr_el0,%function
 nc_arm64_pmccntr_el0:
     isb
     mrs x0, pmccntr_el0

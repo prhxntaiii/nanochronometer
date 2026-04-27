@@ -9,17 +9,26 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
-#include <intrin.h>
-#if defined(__GNUC__) || defined(__clang__)
-#  include <cpuid.h>
+
+#if defined(_M_X64) || defined(_M_IX86) || defined(__x86_64__) || defined(__i386__)
+#  define NC_BENCH_X86 1
+#else
+#  define NC_BENCH_X86 0
 #endif
-#include <xmmintrin.h>
-#include <emmintrin.h>
-#include <pmmintrin.h>
-#include <tmmintrin.h>
-#include <smmintrin.h>
-#include <nmmintrin.h>
-#include <wmmintrin.h>
+
+#if NC_BENCH_X86
+#  include <intrin.h>
+#  if defined(__GNUC__) || defined(__clang__)
+#    include <cpuid.h>
+#  endif
+#  include <xmmintrin.h>
+#  include <emmintrin.h>
+#  include <pmmintrin.h>
+#  include <tmmintrin.h>
+#  include <smmintrin.h>
+#  include <nmmintrin.h>
+#  include <wmmintrin.h>
+#endif
 #include "bench_kernels.h"
 
 #ifndef NC_NOINLINE
@@ -33,9 +42,9 @@
 #endif
 
 #ifndef NC_HAS_SHA_INTRIN
-#  if defined(__has_include)
-#    if __has_include(<shaintrin.h>)
-#      include <shaintrin.h>
+#  if NC_BENCH_X86 && defined(__has_include)
+#    if __has_include(<immintrin.h>)
+#      include <immintrin.h>
 #      define NC_HAS_SHA_INTRIN 1
 #    else
 #      define NC_HAS_SHA_INTRIN 0
@@ -144,7 +153,7 @@ int nc_bench_kernel_available(nc_bench_kernel_id_t id, const nc_bench_cpu_featur
     nc_bench_cpu_features_t local;
     if (!f) { nc_bench_get_cpu_features(&local); f = &local; }
     switch (id) {
-    case NC_BENCH_ASM_LEGACY: return 1;
+    case NC_BENCH_ASM_LEGACY: return NC_BENCH_X86;
     case NC_BENCH_MMX:        return f->mmx;
     case NC_BENCH_SSE:        return f->sse;
     case NC_BENCH_SSE2:       return f->sse2;
@@ -223,6 +232,7 @@ const char *nc_bench_kernel_short_name(nc_bench_kernel_id_t id) {
     }
 }
 
+#if NC_BENCH_X86
 NC_NOINLINE uint64_t nc_bench_kernel_sse(size_t loops) {
     __m128 a = _mm_set_ps(4.0f, 3.0f, 2.0f, 1.0f);
     __m128 b = _mm_set1_ps(1.00024414f);
@@ -375,6 +385,40 @@ NC_NOINLINE uint64_t nc_bench_kernel_shani(size_t loops) {
 }
 #else
 NC_NOINLINE uint64_t nc_bench_kernel_shani(size_t loops) { return nc_bench_kernel_sse2(loops); }
+#endif
+
+
+#else
+static uint64_t nc_bench_non_x86_stub(size_t loops) {
+    uint64_t x = 0x9E3779B97F4A7C15ull;
+    for (size_t i = 0; i < loops; ++i) {
+        x ^= x << 7;
+        x ^= x >> 9;
+        x += 0xD1B54A32D192ED03ull;
+    }
+    return x;
+}
+NC_NOINLINE uint64_t nc_bench_kernel_asm_legacy(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_mmx(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_sse(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_sse2(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_sse3(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_ssse3(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_sse41(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_sse42(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_aesni(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_pclmul(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_shani(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_f16c(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_fma(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx2(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx_vnni(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_vaes(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx512(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx512bw(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx512vl(size_t loops) { return nc_bench_non_x86_stub(loops); }
+NC_NOINLINE uint64_t nc_bench_kernel_avx512vnni(size_t loops) { return nc_bench_non_x86_stub(loops); }
 #endif
 
 uint64_t nc_bench_run_cpu_kernel(nc_bench_kernel_id_t id, size_t loops) {
