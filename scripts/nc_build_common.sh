@@ -198,7 +198,9 @@ nc_print_outputs() {
       nc_path_exists_note "$build_dir/dynamic/lib/$import_lib"
     fi
   fi
-  nc_path_exists_note "$build_dir/$exe_package/bin/nanochrono_cli$exe_ext"
+  if [ "${NC_TARGET_OS:-}" != "android" ] && nc_is_on "${NC_BUILD_CLI:-ON}"; then
+    nc_path_exists_note "$build_dir/$exe_package/bin/nanochrono_cli$exe_ext"
+  fi
   if [ "${NC_TARGET_OS:-}" = "windows" ] && nc_is_on "${NC_BUILD_GUI:-OFF}"; then
     nc_path_exists_note "$build_dir/$exe_package/bin/nanochrono_gui$exe_ext"
   fi

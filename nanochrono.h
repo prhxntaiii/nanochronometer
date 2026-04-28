@@ -393,7 +393,7 @@ NC_API uint64_t nc_arm64_xor_u64_stream(const void *ptr, size_t count);
 typedef enum nc_instruction_family {
     NC_INSTR_SCALAR = 0, NC_INSTR_AES, NC_INSTR_SHA, NC_INSTR_PCLMULQDQ,
     NC_INSTR_CRC32, NC_INSTR_SSE2, NC_INSTR_AVX2, NC_INSTR_AVX512,
-    NC_INSTR_NEON, NC_INSTR_SVE, NC_INSTR_SVE2, NC_INSTR_SME
+    NC_INSTR_NEON, NC_INSTR_SVE, NC_INSTR_SVE2, NC_INSTR_SME, NC_INSTR_SME2
 } nc_instruction_family_t;
 typedef enum nc_status_code { NC_OK = 0, NC_ERR_UNSUPPORTED = -1, NC_ERR_BAD_ARGUMENT = -2, NC_ERR_CRYPTO_BACKEND = -3 } nc_status_code_t;
 typedef struct nc_instruction_result { int status; uint32_t family; uint32_t backend; uint64_t cycles; uint64_t ns; uint64_t blocks; uint64_t checksum; } nc_instruction_result_t;
@@ -622,7 +622,8 @@ typedef enum nc_asm_simd_family {
     NC_ASM_SIMD_ARM64_NEON,
     NC_ASM_SIMD_ARM64_SVE,
     NC_ASM_SIMD_ARM64_SVE2,
-    NC_ASM_SIMD_ARM64_SME
+    NC_ASM_SIMD_ARM64_SME,
+    NC_ASM_SIMD_ARM64_SME2
 } nc_asm_simd_family_t;
 
 typedef enum nc_asm_simd_probe_kind {
@@ -768,6 +769,12 @@ NC_API uint64_t nc_arm64_sme_sc_store_ticks(void *ptr, uint64_t value);
 NC_API uint64_t nc_arm64_sme_sc_vector_load_ticks(const void *ptr);
 NC_API uint64_t nc_arm64_sme_sc_vector_xor_ticks(const void *a, const void *b, void *out_buf, size_t bytes);
 NC_API uint64_t nc_arm64_sme_sc_barrier_ticks(uint32_t iterations);
+NC_API uint64_t nc_arm64_sme2_sc_counter(void);
+NC_API uint64_t nc_arm64_sme2_sc_load_ticks(const void *ptr);
+NC_API uint64_t nc_arm64_sme2_sc_store_ticks(void *ptr, uint64_t value);
+NC_API uint64_t nc_arm64_sme2_sc_vector_load_ticks(const void *ptr);
+NC_API uint64_t nc_arm64_sme2_sc_vector_xor_ticks(const void *a, const void *b, void *out_buf, size_t bytes);
+NC_API uint64_t nc_arm64_sme2_sc_barrier_ticks(uint32_t iterations);
 
 
 
@@ -858,6 +865,123 @@ NC_API int nc_arm64_pmccntr_el0_available(void);
 #endif /* NANOCHRONO_NANOCLOCK_API */
 
 /* -----------------------------------------------------------------------------
+ * Android ARM64 execution-context API.
+ *
+ * The ARM64 .S/.asm files remain pure timing/probe kernels: CNTVCT nanosecond
+ * clock reads, side-channel/local latency probes, interpreted-language wrapper
+ * latency, and other non-crypto microbenchmarks. Android privilege, root
+ * consent, perf_event/PMU availability, and future helper-process selection are
+ * runtime policy/backend concerns handled by this API. Crypto stays in
+ * externals/arm64/android through BoringSSL/libsodium C backends.
+ * -------------------------------------------------------------------------- */
+#ifndef NANOCHRONO_ANDROID_ARM64_API
+#define NANOCHRONO_ANDROID_ARM64_API 1
+
+typedef enum nc_android_privilege {
+    NC_ANDROID_PRIVILEGE_USER_APP = 0,
+    NC_ANDROID_PRIVILEGE_ROOT_PROMPTABLE = 1,
+    NC_ANDROID_PRIVILEGE_ROOT_GRANTED = 2,
+    NC_ANDROID_PRIVILEGE_KERNEL_ASSISTED = 3,
+    NC_ANDROID_PRIVILEGE_DENIED = 4
+} nc_android_privilege_t;
+
+typedef enum nc_android_backend {
+    NC_ANDROID_BACKEND_NONE = 0,
+    NC_ANDROID_BACKEND_USER_CNTVCT = 1,
+    NC_ANDROID_BACKEND_USER_PERF_EVENT = 2,
+    NC_ANDROID_BACKEND_ROOT_PERF_EVENT = 3,
+    NC_ANDROID_BACKEND_SIMPLEPERF_IMPORT = 4,
+    NC_ANDROID_BACKEND_KERNEL_ASSISTED = 5
+} nc_android_backend_t;
+
+typedef enum nc_android_mode {
+    NC_ANDROID_MODE_AUTO = 0,
+    NC_ANDROID_MODE_USER_ONLY = 1,
+    NC_ANDROID_MODE_ROOT_IF_CONSENTS = 2,
+    NC_ANDROID_MODE_REQUIRE_ROOT = 3
+} nc_android_mode_t;
+
+typedef struct nc_android_caps {
+    uint32_t struct_size;
+    uint32_t privilege;
+    uint32_t recommended_backend;
+    uint32_t current_process_root;
+
+    uint32_t has_cntvct_el0;
+    uint32_t has_neon;
+    uint32_t has_sve;
+    uint32_t has_sve2;
+    uint32_t has_sme;
+    uint32_t has_sme2;
+
+    uint32_t perf_event_available;
+    uint32_t perf_event_restricted;
+    uint32_t perf_hw_cycles_available;
+    uint32_t perf_instructions_available;
+    uint32_t perf_cache_misses_available;
+    uint32_t perf_branch_misses_available;
+
+    uint32_t root_prompt_available;
+    uint32_t root_granted;
+    uint32_t simpleperf_available;
+    uint32_t reserved0;
+
+    char abi[32];
+    char kernel_release[64];
+    char device_model[64];
+} nc_android_caps_t;
+
+typedef struct nc_android_config {
+    uint32_t mode;
+    uint32_t allow_su_prompt;
+    uint32_t allow_pmu_counters;
+    uint32_t allow_kernel_samples;
+    uint32_t allow_system_wide_profile;
+    uint32_t prefer_simpleperf;
+    uint32_t sample_frequency_hz;
+    uint32_t reserved0;
+} nc_android_config_t;
+
+typedef struct nc_android_root_consent_result {
+    uint32_t struct_size;
+    uint32_t prompt_attempted;
+    uint32_t granted;
+    int32_t exit_code;
+    char message[160];
+} nc_android_root_consent_result_t;
+
+typedef struct nc_android_backend_info {
+    uint32_t struct_size;
+    uint32_t privilege;
+    uint32_t backend;
+    uint32_t used_su;
+    uint32_t user_granted_root;
+    uint32_t pmu_available;
+    uint32_t pmu_restricted;
+    uint32_t requires_helper_process;
+    uint32_t fallback_used;
+    uint32_t reserved0;
+    char reason[192];
+} nc_android_backend_info_t;
+
+NC_API const char *nc_android_privilege_name(nc_android_privilege_t privilege);
+NC_API const char *nc_android_backend_name(nc_android_backend_t backend);
+NC_API const char *nc_android_mode_name(nc_android_mode_t mode);
+NC_API int nc_android_default_config(nc_android_config_t *cfg);
+NC_API int nc_android_detect_capabilities(nc_android_caps_t *out);
+
+/* Explicit user-consent gate. This is the first privileged operation for root
+ * mode and intentionally invokes `su -c id` so Magisk/SuperSU can ask the user.
+ * NanoChronometer does not silently elevate, bypass, or persist root access. */
+NC_API int nc_android_request_root_consent(nc_android_root_consent_result_t *out);
+
+NC_API int nc_android_select_backend(const nc_android_config_t *cfg,
+                                     const nc_android_caps_t *caps,
+                                     nc_android_backend_info_t *out);
+
+#endif /* NANOCHRONO_ANDROID_ARM64_API */
+
+/* -----------------------------------------------------------------------------
  * Precision clock application API: local raw clock + optional NTP discipline,
  * UTC/local/custom offset formatting, calibration, CPU affinity and overhead
  * accounting.  These symbols are exported for static and dynamic libraries and
@@ -946,6 +1070,73 @@ NC_API int nc_format_unix_time_ns_ex(uint64_t unix_ns, nc_time_zone_mode_t mode,
 NC_API int nc_precision_clock_default_config(nc_precision_clock_config_t *cfg);
 NC_API int nc_clock_pin_thread_to_cpu(uint32_t cpu_index);
 NC_API uint32_t nc_clock_current_cpu(void);
+/* Runtime stability diagnostics for production-safe benchmark/profiler runs.
+ * Exported by all libraries and usable from CLI, GUI and language wrappers. */
+typedef struct nc_cpu_pin_validation {
+    int status;
+    uint32_t requested_cpu;
+    uint32_t pinned;
+    uint32_t cpu_before;
+    uint32_t cpu_after;
+    uint32_t migrated;
+    uint32_t migrations;
+    uint32_t samples;
+    uint32_t first_migration_sample;
+    uint64_t observed_cpu_mask_low;
+} nc_cpu_pin_validation_t;
+
+typedef struct nc_core_migration_result {
+    int status;
+    uint32_t cpu_start;
+    uint32_t cpu_end;
+    uint32_t migrated;
+    uint32_t migrations;
+    uint32_t samples;
+    uint32_t first_migration_sample;
+    uint64_t observed_cpu_mask_low;
+} nc_core_migration_result_t;
+
+typedef struct nc_frequency_drift_result {
+    int status;
+    uint32_t route;
+    uint32_t samples;
+    uint32_t interval_ms;
+    uint32_t cpu_before;
+    uint32_t cpu_after;
+    uint32_t migrated;
+    uint64_t raw_start;
+    uint64_t raw_end;
+    uint64_t wall_start_ns;
+    uint64_t wall_end_ns;
+    uint64_t elapsed_units;
+    uint64_t elapsed_ns;
+    double units_per_second;
+    double ns_per_unit;
+    double ppm_error_vs_context;
+} nc_frequency_drift_result_t;
+
+typedef struct nc_thermal_state {
+    int status;
+    int32_t temperature_millicelsius;
+    uint32_t throttling_detected;
+    uint32_t source_available;
+    char source[96];
+} nc_thermal_state_t;
+
+typedef struct nc_system_stability_snapshot {
+    int status;
+    nc_cpu_pin_validation_t pin;
+    nc_core_migration_result_t migration;
+    nc_frequency_drift_result_t drift;
+    nc_thermal_state_t thermal;
+} nc_system_stability_snapshot_t;
+
+NC_API int nc_clock_validate_cpu_pin(uint32_t cpu_index, uint32_t samples, uint32_t interval_us, nc_cpu_pin_validation_t *out);
+NC_API int nc_clock_detect_core_migration(uint32_t samples, uint32_t interval_us, nc_core_migration_result_t *out);
+NC_API int nc_clock_measure_frequency_drift(nc_ctx_t *ctx, nc_clock_route_t route, uint32_t samples, uint32_t interval_ms, nc_frequency_drift_result_t *out);
+NC_API int nc_clock_query_thermal_state(nc_thermal_state_t *out);
+NC_API int nc_clock_system_stability_snapshot(nc_ctx_t *ctx, uint32_t cpu_index, nc_system_stability_snapshot_t *out);
+
 NC_API uint64_t nc_measure_kernel_timecall_overhead_cycles(nc_ctx_t *ctx, uint32_t iterations);
 NC_API uint64_t nc_measure_api_call_overhead_cycles(nc_ctx_t *ctx, uint32_t iterations);
 NC_API int nc_calibrate_clock_route(nc_ctx_t *ctx, nc_clock_route_t route,

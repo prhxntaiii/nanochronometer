@@ -6,10 +6,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <errno.h>
 #if defined(_WIN32)
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
+#  include <windows.h>
 #else
 #  include <sys/types.h>
 #  include <sys/socket.h>
@@ -17,6 +19,16 @@
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <sched.h>
+#  if defined(__linux__)
+#    include <pthread.h>
+#  endif
+#  if defined(__ANDROID__)
+#    include <sys/syscall.h>
+#    include <asm/unistd.h>
+#  endif
+#  if defined(__linux__)
+#    include <dirent.h>
+#  endif
 #endif
 #include <string.h>
 #include <math.h>
@@ -1648,6 +1660,9 @@ NC_API int nc_asm_sidechannel_cache_audit(nc_ctx_t *ctx,
 #ifndef HWCAP2_SME
 #define HWCAP2_SME (1UL << 23)
 #endif
+#ifndef HWCAP2_SME2
+#define HWCAP2_SME2 (1UL << 37)
+#endif
 
 NC_API const char *nc_asm_simd_family_name(nc_asm_simd_family_t family) {
     switch (family) {
@@ -1669,6 +1684,7 @@ NC_API const char *nc_asm_simd_family_name(nc_asm_simd_family_t family) {
     case NC_ASM_SIMD_ARM64_SVE: return "arm64-sve";
     case NC_ASM_SIMD_ARM64_SVE2: return "arm64-sve2";
     case NC_ASM_SIMD_ARM64_SME: return "arm64-sme";
+    case NC_ASM_SIMD_ARM64_SME2: return "arm64-sme2";
     default: return "unknown";
     }
 }
@@ -1711,10 +1727,29 @@ NC_API int nc_asm_simd_family_available(nc_asm_simd_family_t family) {
     case NC_ASM_SIMD_ARM64_SVE: return (getauxval(AT_HWCAP) & HWCAP_SVE) ? 1 : 0;
     case NC_ASM_SIMD_ARM64_SVE2: return (getauxval(AT_HWCAP2) & HWCAP2_SVE2) ? 1 : 0;
     case NC_ASM_SIMD_ARM64_SME: return (getauxval(AT_HWCAP2) & HWCAP2_SME) ? 1 : 0;
+    case NC_ASM_SIMD_ARM64_SME2: return (getauxval(AT_HWCAP2) & HWCAP2_SME2) ? 1 : 0;
+#elif defined(_WIN32)
+#ifndef PF_ARM_SVE_INSTRUCTIONS_AVAILABLE
+#define PF_ARM_SVE_INSTRUCTIONS_AVAILABLE 46
+#endif
+#ifndef PF_ARM_SVE2_INSTRUCTIONS_AVAILABLE
+#define PF_ARM_SVE2_INSTRUCTIONS_AVAILABLE 47
+#endif
+#ifndef PF_ARM_SME_INSTRUCTIONS_AVAILABLE
+#define PF_ARM_SME_INSTRUCTIONS_AVAILABLE 70
+#endif
+#ifndef PF_ARM_SME2_INSTRUCTIONS_AVAILABLE
+#define PF_ARM_SME2_INSTRUCTIONS_AVAILABLE 71
+#endif
+    case NC_ASM_SIMD_ARM64_SVE: return IsProcessorFeaturePresent(PF_ARM_SVE_INSTRUCTIONS_AVAILABLE) ? 1 : 0;
+    case NC_ASM_SIMD_ARM64_SVE2: return IsProcessorFeaturePresent(PF_ARM_SVE2_INSTRUCTIONS_AVAILABLE) ? 1 : 0;
+    case NC_ASM_SIMD_ARM64_SME: return IsProcessorFeaturePresent(PF_ARM_SME_INSTRUCTIONS_AVAILABLE) ? 1 : 0;
+    case NC_ASM_SIMD_ARM64_SME2: return IsProcessorFeaturePresent(PF_ARM_SME2_INSTRUCTIONS_AVAILABLE) ? 1 : 0;
 #else
     case NC_ASM_SIMD_ARM64_SVE:
     case NC_ASM_SIMD_ARM64_SVE2:
-    case NC_ASM_SIMD_ARM64_SME: return 0;
+    case NC_ASM_SIMD_ARM64_SME:
+    case NC_ASM_SIMD_ARM64_SME2: return 0;
 #endif
     default: return 0;
     }
@@ -1769,6 +1804,7 @@ static int nc_asm_simd_dispatch_(nc_asm_simd_family_t family, nc_simd_dispatch_e
     case NC_ASM_SIMD_ARM64_SVE: *entry = (nc_simd_dispatch_entry_t)NC_ARM64_SIMD_ENTRY(sve); return 1;
     case NC_ASM_SIMD_ARM64_SVE2: *entry = (nc_simd_dispatch_entry_t)NC_ARM64_SIMD_ENTRY(sve2); return 1;
     case NC_ASM_SIMD_ARM64_SME: *entry = (nc_simd_dispatch_entry_t)NC_ARM64_SIMD_ENTRY(sme); return 1;
+    case NC_ASM_SIMD_ARM64_SME2: *entry = (nc_simd_dispatch_entry_t)NC_ARM64_SIMD_ENTRY(sme2); return 1;
     default: return 0;
     }
 #else
@@ -1952,7 +1988,7 @@ NC_API nc_asm_simd_family_t nc_select_best_simd_family(void) {
     };
 #elif defined(__aarch64__) || defined(_M_ARM64)
     static const nc_asm_simd_family_t order[] = {
-        NC_ASM_SIMD_ARM64_SME, NC_ASM_SIMD_ARM64_SVE2, NC_ASM_SIMD_ARM64_SVE, NC_ASM_SIMD_ARM64_NEON
+        NC_ASM_SIMD_ARM64_SME2, NC_ASM_SIMD_ARM64_SME, NC_ASM_SIMD_ARM64_SVE2, NC_ASM_SIMD_ARM64_SVE, NC_ASM_SIMD_ARM64_NEON
     };
 #else
     static const nc_asm_simd_family_t order[] = { NC_ASM_SIMD_MMX };
@@ -2230,6 +2266,17 @@ NC_API int nc_clock_pin_thread_to_cpu(uint32_t cpu_index) {
 #if defined(_WIN32)
     DWORD_PTR mask = ((DWORD_PTR)1) << (cpu_index % (sizeof(DWORD_PTR) * 8));
     return SetThreadAffinityMask(GetCurrentThread(), mask) ? 1 : 0;
+#elif defined(__ANDROID__)
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET((int)cpu_index, &set);
+#  if defined(__NR_gettid) && defined(__NR_sched_setaffinity)
+    long tid = syscall(__NR_gettid);
+    if (tid < 0) return 0;
+    return syscall(__NR_sched_setaffinity, tid, sizeof(set), &set) == 0 ? 1 : 0;
+#  else
+    return 0;
+#  endif
 #elif defined(__linux__)
     cpu_set_t set;
     CPU_ZERO(&set);
@@ -2519,4 +2566,247 @@ NC_API int nc_calibrate_cycles_per_ns(nc_ctx_t *ctx, const nc_stable_clock_confi
     }
     if (cfg->require_no_migration && out->migrated) out->status = NC_ERR_UNSUPPORTED;
     return out->cycles_per_ns > 0.0;
+}
+
+/* -------------------------------------------------------------------------
+ * Cross-platform stability diagnostics: affinity validation, migration,
+ * frequency drift and thermal metadata. Outside the timing hot path.
+ * ------------------------------------------------------------------------- */
+static void nc_diag_sleep_us_(uint32_t us) {
+#if defined(_WIN32)
+    DWORD ms = (DWORD)((us + 999u) / 1000u);
+    if (!ms) ms = 1;
+    Sleep(ms);
+#else
+    struct timespec ts;
+    ts.tv_sec = (time_t)(us / 1000000u);
+    ts.tv_nsec = (long)(us % 1000000u) * 1000l;
+    while (nanosleep(&ts, &ts) != 0 && errno == EINTR) {}
+#endif
+}
+
+static void nc_diag_record_cpu_(uint32_t cpu, uint64_t *mask_low) {
+    if (mask_low && cpu < 64u) *mask_low |= (1ull << cpu);
+}
+
+NC_API int nc_clock_detect_core_migration(uint32_t samples, uint32_t interval_us,
+                                          nc_core_migration_result_t *out) {
+    if (!out) return 0;
+    memset(out, 0, sizeof(*out));
+    out->status = NC_OK;
+    if (!samples) samples = 256u;
+    if (!interval_us) interval_us = 1000u;
+    out->samples = samples;
+    uint32_t prev = nc_clock_current_cpu();
+    out->cpu_start = prev;
+    out->cpu_end = prev;
+    nc_diag_record_cpu_(prev, &out->observed_cpu_mask_low);
+    for (uint32_t i = 0; i < samples; ++i) {
+        nc_diag_sleep_us_(interval_us);
+        uint32_t cur = nc_clock_current_cpu();
+        nc_diag_record_cpu_(cur, &out->observed_cpu_mask_low);
+        if (cur != 0xffffffffu) out->cpu_end = cur;
+        if (prev != 0xffffffffu && cur != 0xffffffffu && cur != prev) {
+            if (!out->migrated) out->first_migration_sample = i + 1u;
+            out->migrated = 1u;
+            out->migrations++;
+        }
+        prev = cur;
+    }
+    if (out->cpu_start == 0xffffffffu || out->cpu_end == 0xffffffffu) out->status = NC_ERR_UNSUPPORTED;
+    return out->status == NC_OK;
+}
+
+NC_API int nc_clock_validate_cpu_pin(uint32_t cpu_index, uint32_t samples, uint32_t interval_us,
+                                     nc_cpu_pin_validation_t *out) {
+    if (!out) return 0;
+    memset(out, 0, sizeof(*out));
+    out->status = NC_OK;
+    out->requested_cpu = cpu_index;
+    out->cpu_before = nc_clock_current_cpu();
+    out->pinned = (uint32_t)nc_clock_pin_thread_to_cpu(cpu_index);
+    if (!samples) samples = 256u;
+    if (!interval_us) interval_us = 1000u;
+    out->samples = samples;
+    uint32_t prev = nc_clock_current_cpu();
+    nc_diag_record_cpu_(prev, &out->observed_cpu_mask_low);
+    for (uint32_t i = 0; i < samples; ++i) {
+        nc_diag_sleep_us_(interval_us);
+        uint32_t cur = nc_clock_current_cpu();
+        nc_diag_record_cpu_(cur, &out->observed_cpu_mask_low);
+        if (prev != 0xffffffffu && cur != 0xffffffffu && cur != prev) {
+            if (!out->migrated) out->first_migration_sample = i + 1u;
+            out->migrated = 1u;
+            out->migrations++;
+        }
+        prev = cur;
+    }
+    out->cpu_after = nc_clock_current_cpu();
+    nc_diag_record_cpu_(out->cpu_after, &out->observed_cpu_mask_low);
+    if (!out->pinned) out->status = NC_ERR_UNSUPPORTED;
+    if (out->cpu_after != 0xffffffffu && out->cpu_after != cpu_index) out->migrated = 1u;
+    return out->pinned ? 1 : 0;
+}
+
+NC_API int nc_clock_measure_frequency_drift(nc_ctx_t *ctx, nc_clock_route_t route,
+                                            uint32_t samples, uint32_t interval_ms,
+                                            nc_frequency_drift_result_t *out) {
+    if (!out) return 0;
+    memset(out, 0, sizeof(*out));
+    out->status = NC_OK;
+    if (route == NC_CLOCK_ROUTE_AUTO) route = nc_clock_select_best_route();
+    if (!samples) samples = 8u;
+    if (!interval_ms) interval_ms = 50u;
+    out->route = (uint32_t)route;
+    out->samples = samples;
+    out->interval_ms = interval_ms;
+    out->cpu_before = nc_clock_current_cpu();
+    out->wall_start_ns = nc_monotonic_time_ns();
+    out->raw_start = nc_clock_read_raw_route(ctx, route);
+    uint64_t last_wall = out->wall_start_ns;
+    uint64_t last_raw = out->raw_start;
+    double first_ups = 0.0;
+    double max_ppm_abs = 0.0;
+    for (uint32_t i = 0; i < samples; ++i) {
+        nc_diag_sleep_us_(interval_ms * 1000u);
+        uint64_t w = nc_monotonic_time_ns();
+        uint64_t r = nc_clock_read_raw_route(ctx, route);
+        uint64_t dw = w >= last_wall ? (w - last_wall) : 0;
+        uint64_t dr = r >= last_raw ? (r - last_raw) : 0;
+        if (dw && dr) {
+            double ups = (double)dr * 1.0e9 / (double)dw;
+            if (first_ups == 0.0) first_ups = ups;
+            else if (first_ups > 0.0) {
+                double ppm = ((ups - first_ups) / first_ups) * 1000000.0;
+                double abs_ppm = ppm < 0.0 ? -ppm : ppm;
+                if (abs_ppm > max_ppm_abs) max_ppm_abs = abs_ppm;
+            }
+        }
+        last_wall = w;
+        last_raw = r;
+    }
+    out->wall_end_ns = last_wall;
+    out->raw_end = last_raw;
+    out->cpu_after = nc_clock_current_cpu();
+    out->migrated = (out->cpu_before != 0xffffffffu && out->cpu_after != 0xffffffffu && out->cpu_before != out->cpu_after) ? 1u : 0u;
+    out->elapsed_units = out->raw_end >= out->raw_start ? (out->raw_end - out->raw_start) : 0;
+    out->elapsed_ns = out->wall_end_ns >= out->wall_start_ns ? (out->wall_end_ns - out->wall_start_ns) : 0;
+    if (out->elapsed_ns && out->elapsed_units) {
+        out->units_per_second = (double)out->elapsed_units * 1.0e9 / (double)out->elapsed_ns;
+        out->ns_per_unit = (double)out->elapsed_ns / (double)out->elapsed_units;
+    } else {
+        out->status = NC_ERR_UNSUPPORTED;
+    }
+    out->ppm_error_vs_context = max_ppm_abs;
+    return out->status == NC_OK;
+}
+
+#if defined(__linux__)
+static int nc_contains_nocase_(const char *s, const char *needle) {
+    if (!s || !needle || !needle[0]) return 0;
+    size_t nl = strlen(needle);
+    for (; *s; ++s) {
+        size_t i = 0;
+        while (i < nl) {
+            char a = s[i], b = needle[i];
+            if (!a) return 0;
+            if (a >= 'A' && a <= 'Z') a = (char)(a - 'A' + 'a');
+            if (b >= 'A' && b <= 'Z') b = (char)(b - 'A' + 'a');
+            if (a != b) break;
+            ++i;
+        }
+        if (i == nl) return 1;
+    }
+    return 0;
+}
+
+static int nc_read_text_file_(const char *path, char *buf, size_t cap) {
+    if (!path || !buf || cap == 0) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) return 0;
+    size_t n = fread(buf, 1, cap - 1u, f);
+    fclose(f);
+    buf[n] = '\0';
+    while (n && (buf[n - 1u] == '\n' || buf[n - 1u] == '\r' || buf[n - 1u] == ' ' || buf[n - 1u] == '\t')) buf[--n] = '\0';
+    return n > 0;
+}
+
+static int nc_read_i32_file_(const char *path, int32_t *out) {
+    char b[64];
+    if (!nc_read_text_file_(path, b, sizeof(b))) return 0;
+    char *end = NULL;
+    long v = strtol(b, &end, 10);
+    if (end == b) return 0;
+    if (v > 10000000L) v = 10000000L;
+    if (v < -1000000L) v = -1000000L;
+    *out = (int32_t)v;
+    return 1;
+}
+#endif
+
+NC_API int nc_clock_query_thermal_state(nc_thermal_state_t *out) {
+    if (!out) return 0;
+    memset(out, 0, sizeof(*out));
+    out->status = NC_ERR_UNSUPPORTED;
+    out->temperature_millicelsius = INT32_MIN;
+#if defined(__linux__)
+    DIR *d = opendir("/sys/class/thermal");
+    if (!d) return 0;
+    struct dirent *de;
+    int found_any = 0, found_preferred = 0;
+    int32_t best_temp = INT32_MIN;
+    char best_source[96] = {0};
+    while ((de = readdir(d)) != NULL) {
+        if (strncmp(de->d_name, "thermal_zone", 12) != 0) continue;
+        char base[256], type_path[320], temp_path[320], type[96];
+        const char thermal_prefix[] = "/sys/class/thermal/";
+        size_t prefix_len = sizeof(thermal_prefix) - 1u;
+        size_t name_len = strlen(de->d_name);
+        if (name_len >= sizeof(base) - prefix_len) continue;
+        memcpy(base, thermal_prefix, prefix_len);
+        memcpy(base + prefix_len, de->d_name, name_len + 1u);
+        snprintf(type_path, sizeof(type_path), "%s/type", base);
+        snprintf(temp_path, sizeof(temp_path), "%s/temp", base);
+        type[0] = '\0';
+        nc_read_text_file_(type_path, type, sizeof(type));
+        int32_t temp = 0;
+        if (!nc_read_i32_file_(temp_path, &temp)) continue;
+        found_any = 1;
+        int preferred = nc_contains_nocase_(type, "cpu") || nc_contains_nocase_(type, "soc") || nc_contains_nocase_(type, "ap") || nc_contains_nocase_(type, "cluster");
+        if ((!found_preferred && preferred) || (preferred == found_preferred && temp > best_temp) || (!found_preferred && best_temp == INT32_MIN)) {
+            if (preferred) found_preferred = 1;
+            best_temp = temp;
+            if (type[0]) {
+                snprintf(best_source, sizeof(best_source), "%.47s:%.47s", de->d_name, type);
+            } else {
+                snprintf(best_source, sizeof(best_source), "%.95s", de->d_name);
+            }
+        }
+    }
+    closedir(d);
+    if (found_any) {
+        out->status = NC_OK;
+        out->source_available = 1u;
+        out->temperature_millicelsius = best_temp;
+        snprintf(out->source, sizeof(out->source), "%s", best_source[0] ? best_source : "thermal_zone");
+        out->throttling_detected = (best_temp >= 85000) ? 1u : 0u;
+        return 1;
+    }
+#else
+    snprintf(out->source, sizeof(out->source), "%s", "unsupported");
+#endif
+    return 0;
+}
+
+NC_API int nc_clock_system_stability_snapshot(nc_ctx_t *ctx, uint32_t cpu_index,
+                                              nc_system_stability_snapshot_t *out) {
+    if (!out) return 0;
+    memset(out, 0, sizeof(*out));
+    out->status = NC_OK;
+    nc_clock_validate_cpu_pin(cpu_index, 64u, 1000u, &out->pin);
+    nc_clock_detect_core_migration(64u, 1000u, &out->migration);
+    nc_clock_measure_frequency_drift(ctx, NC_CLOCK_ROUTE_AUTO, 6u, 50u, &out->drift);
+    nc_clock_query_thermal_state(&out->thermal);
+    if (out->pin.status != NC_OK || out->migration.status != NC_OK || out->drift.status != NC_OK) out->status = NC_ERR_UNSUPPORTED;
+    return 1;
 }

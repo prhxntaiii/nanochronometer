@@ -126,7 +126,7 @@ entry-point set:
 
 ### ARM64 families
 
-NEON, SVE, SVE2 and SME each export the same `nc_arm64_<family>_sc_*` entry-point
+NEON, SVE, SVE2, SME and SME2 each export the same `nc_arm64_<family>_sc_*` entry-point
 set using `CNTVCT_EL0` ticks:
 
 - `*_sc_counter()`

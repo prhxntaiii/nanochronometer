@@ -48,7 +48,7 @@ func WelchTScore(a, b []uint64) float64 {
 
 type InstructionFamily uint32
 const (
-    InstrScalar InstructionFamily = iota; InstrAES; InstrSHA; InstrPCLMULQDQ; InstrCRC32; InstrSSE2; InstrAVX2; InstrAVX512; InstrNEON; InstrSVE; InstrSVE2; InstrSME
+    InstrScalar InstructionFamily = iota; InstrAES; InstrSHA; InstrPCLMULQDQ; InstrCRC32; InstrSSE2; InstrAVX2; InstrAVX512; InstrNEON; InstrSVE; InstrSVE2; InstrSME; InstrSME2
 )
 type InstructionResult struct { Status int32; Family, Backend uint32; Cycles, NS, Blocks, Checksum uint64 }
 func InstructionAvailable(f InstructionFamily) bool { return C.nc_instruction_family_available(C.nc_instruction_family_t(f)) != 0 }

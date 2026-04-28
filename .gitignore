@@ -14,3 +14,27 @@ desktop.ini
 /unified
 *.csv
 nanochrono-results.csv
+
+# build outputs
+build/
+build_*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# generated packages
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# editor/system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# local env
+.env
+local.properties

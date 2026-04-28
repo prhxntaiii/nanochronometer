@@ -243,7 +243,7 @@ This tree was reorganized for portable native libraries and Python FFI/wheel use
 - ARM64 assembler is kept as `.S` under:
   - `asm/arm64/windows`
   - `asm/arm64/linux`
-- ARM64 families are split into scalar legacy, NEON, SVE, SVE2, and SME files so runtime code can select a safe implementation and avoid illegal-instruction faults.
+- ARM64 families are split into scalar legacy, NEON, SVE, SVE2, SME, and SME2 files so runtime code can select a safe implementation and avoid illegal-instruction faults.
 - External crypto layout is architecture/platform-specific:
   - `externals/x64/windows/{openssl,libsodium}`
   - `externals/x64/linux/{openssl,libsodium}`
@@ -299,7 +299,7 @@ Typical workflow:
 
 Examples measure both native timer overhead and FFI/callback overhead, which is useful when comparing Python wheels, Rust FFI, Go/cgo, .NET P/Invoke, Java/JNA, Node ffi-napi, Zig and LuaJIT.
 
-## 0.5.0 unified instruction toolkit
+## 2.0.0 unified instruction toolkit
 
 NanoChronometer now follows the OpenSSL/FFmpeg style: build one `nanochrono` library per OS/architecture and dispatch instruction families at runtime instead of producing one library per instruction set. x64 uses NASM `.asm`; ARM64 uses assembler `.S`. Unsupported instruction families return `NC_ERR_UNSUPPORTED` to avoid `illegal instruction`.
 
@@ -327,3 +327,21 @@ It is designed for constant-time validation of code the caller owns; it does not
 implement secret recovery or cross-process attack orchestration.
 
 Nanosecond stopwatch helpers are also available through `nc_stopwatch_ns_*`.
+
+## Android Termux CLI
+
+NanoChronometer can also be built as a native Android ARM64 executable inside
+Termux. This is separate from the Android NDK library-only build.
+
+```sh
+pkg install clang cmake ninja make git
+./scripts/build_termux_arm64_cli.sh
+```
+
+Output:
+
+```text
+build/termux-arm64/static/bin/nanochrono_cli
+```
+
+See `TERMUX_ANDROID_CLI.md` for install options and notes.

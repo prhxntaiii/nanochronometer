@@ -48,6 +48,7 @@ static void nc_cli_usage(const char *exe) {
     printf("  %s --clock-once [--simple|--nano] [--local|--utc|--utc-offset MIN] [--ntp SERVER] one precise clock sample\n", exe);
     printf("  %s --calibrate-clock [--pin-cpu N] calibrate selected counter route and detect migration\n", exe);
     printf("  %s --stable-calibrate [--pin-cpu N] [--ms N] calibrate cycles_per_ns for raw RDTSC/RDTSCP/CNTVCT conversion\n", exe);
+    printf("  %s --stability [--pin-cpu N] validate affinity, migration, clock drift and thermal metadata\n", exe);
     printf("  %s --cycles-to-ns CYCLES --cycles-per-ns F convert calibrated raw cycles/ticks to ns\n", exe);
     printf("  %s --ntp SERVER   query an NTP server and report offset/delay/overhead\n", exe);
     printf("  %s --ns-clock      live nanosecond wall-clock plus raw CPU counters\n", exe);
@@ -481,7 +482,7 @@ static void run_asm_simd_probe(nc_ctx_t *ctx) {
     unsigned char a[256], b[256], out[256];
     for (size_t i = 0; i < sizeof(a); ++i) { a[i] = (unsigned char)i; b[i] = (unsigned char)(0xa5u ^ i); out[i] = 0; }
     printf("ASM SIMD probes (available families only):\n");
-    for (int fam = NC_ASM_SIMD_MMX; fam <= NC_ASM_SIMD_ARM64_SME; ++fam) {
+    for (int fam = NC_ASM_SIMD_MMX; fam <= NC_ASM_SIMD_ARM64_SME2; ++fam) {
         if (!nc_asm_simd_family_available((nc_asm_simd_family_t)fam)) continue;
         nc_asm_simd_probe_result_t load_r, xor_r, bar_r;
         nc_asm_simd_probe(ctx, (nc_asm_simd_family_t)fam, NC_ASM_SIMD_PROBE_VECTOR_LOAD, a, NULL, NULL, sizeof(a), 0, &load_r);
@@ -494,6 +495,51 @@ static void run_asm_simd_probe(nc_ctx_t *ctx) {
                (unsigned long long)bar_r.raw_units, (unsigned long long)bar_r.ns);
     }
 }
+
+static int nc_cli_run_stability(int argc, char **argv) {
+    int pin_cpu = 0;
+    uint32_t cpu_index = 0;
+    nc_cli_parse_clock_options(argc, argv, NULL, &pin_cpu, &cpu_index);
+    (void)pin_cpu;
+    nc_ctx_t *ctx = nc_create();
+    if (!ctx) return 1;
+    nc_system_stability_snapshot_t st;
+    if (!nc_clock_system_stability_snapshot(ctx, cpu_index, &st)) {
+        nc_destroy(ctx);
+        return 1;
+    }
+    printf("stability status=%d route=%s cpu=%u\n",
+           st.status,
+           nc_clock_route_name((nc_clock_route_t)st.drift.route),
+           nc_clock_current_cpu());
+    printf("pin requested_cpu=%u pinned=%u cpu_before=%u cpu_after=%u migrated=%u migrations=%u mask_low=0x%016llx\n",
+           st.pin.requested_cpu, st.pin.pinned, st.pin.cpu_before, st.pin.cpu_after,
+           st.pin.migrated, st.pin.migrations,
+           (unsigned long long)st.pin.observed_cpu_mask_low);
+    printf("migration cpu_start=%u cpu_end=%u migrated=%u migrations=%u samples=%u mask_low=0x%016llx\n",
+           st.migration.cpu_start, st.migration.cpu_end, st.migration.migrated,
+           st.migration.migrations, st.migration.samples,
+           (unsigned long long)st.migration.observed_cpu_mask_low);
+    printf("frequency_drift route=%s elapsed_units=%llu elapsed_ns=%llu units_per_second=%.6f ns_per_unit=%.12f max_ppm_delta=%.3f migrated=%u\n",
+           nc_clock_route_name((nc_clock_route_t)st.drift.route),
+           (unsigned long long)st.drift.elapsed_units,
+           (unsigned long long)st.drift.elapsed_ns,
+           st.drift.units_per_second,
+           st.drift.ns_per_unit,
+           st.drift.ppm_error_vs_context,
+           st.drift.migrated);
+    if (st.thermal.source_available) {
+        printf("thermal source=%s temp_mC=%d throttling_hint=%u\n",
+               st.thermal.source,
+               st.thermal.temperature_millicelsius,
+               st.thermal.throttling_detected);
+    } else {
+        printf("thermal status=unavailable\n");
+    }
+    nc_destroy(ctx);
+    return 0;
+}
+
 
 int main(int argc, char **argv) {
     if (argc == 1) {
@@ -544,6 +590,9 @@ int main(int argc, char **argv) {
     }
     if (argc >= 2 && (strcmp(argv[1], "--stable-calibrate") == 0 || strcmp(argv[1], "stable-calibrate") == 0)) {
         return nc_cli_run_stable_calibrate(argc, argv);
+    }
+    if (argc >= 2 && (strcmp(argv[1], "--stability") == 0 || strcmp(argv[1], "stability") == 0)) {
+        return nc_cli_run_stability(argc, argv);
     }
     if (argc >= 2 && strcmp(argv[1], "--cycles-to-ns") == 0) {
         return nc_cli_run_cycles_to_ns(argc, argv);

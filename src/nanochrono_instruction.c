@@ -17,13 +17,13 @@ static uint64_t nc_tick_(nc_ctx_t *ctx){ return ctx ? nc_now_cycles(ctx) : nc_wa
 static uint64_t nc_to_ns_(nc_ctx_t *ctx, uint64_t c){ return ctx ? nc_cycles_to_ns(ctx,c) : c; }
 static void nc_fill_result_(nc_ctx_t *ctx, nc_instruction_result_t *o, int st, nc_instruction_family_t fam, uint64_t cyc, uint64_t blocks, uint64_t sum){ if(o){ o->status=st; o->family=(uint32_t)fam; o->backend=(uint32_t)nc_backend(ctx); o->cycles=cyc; o->ns=nc_to_ns_(ctx,cyc); o->blocks=blocks; o->checksum=sum; } }
 
-const char *nc_instruction_family_name(nc_instruction_family_t f){ switch(f){ case NC_INSTR_SCALAR:return "scalar"; case NC_INSTR_AES:return "aes"; case NC_INSTR_SHA:return "sha"; case NC_INSTR_PCLMULQDQ:return "pclmulqdq/pmull"; case NC_INSTR_CRC32:return "crc32"; case NC_INSTR_SSE2:return "sse2"; case NC_INSTR_AVX2:return "avx2"; case NC_INSTR_AVX512:return "avx512"; case NC_INSTR_NEON:return "neon"; case NC_INSTR_SVE:return "sve"; case NC_INSTR_SVE2:return "sve2"; case NC_INSTR_SME:return "sme"; default:return "unknown"; } }
+const char *nc_instruction_family_name(nc_instruction_family_t f){ switch(f){ case NC_INSTR_SCALAR:return "scalar"; case NC_INSTR_AES:return "aes"; case NC_INSTR_SHA:return "sha"; case NC_INSTR_PCLMULQDQ:return "pclmulqdq/pmull"; case NC_INSTR_CRC32:return "crc32"; case NC_INSTR_SSE2:return "sse2"; case NC_INSTR_AVX2:return "avx2"; case NC_INSTR_AVX512:return "avx512"; case NC_INSTR_NEON:return "neon"; case NC_INSTR_SVE:return "sve"; case NC_INSTR_SVE2:return "sve2"; case NC_INSTR_SME:return "sme"; case NC_INSTR_SME2:return "sme2"; default:return "unknown"; } }
 
 int nc_instruction_family_available(nc_instruction_family_t f){
 #if defined(__x86_64__) || defined(_M_X64)
     switch(f){ case NC_INSTR_SCALAR:return 1; case NC_INSTR_AES:return nc_cpu_has_aesni(); case NC_INSTR_SHA:return nc_cpu_has_shani(); case NC_INSTR_PCLMULQDQ:return nc_cpu_has_pclmulqdq(); case NC_INSTR_CRC32:return nc_cpu_has_sse42(); case NC_INSTR_SSE2:return nc_cpu_has_sse2(); case NC_INSTR_AVX2:return nc_cpu_has_avx2(); case NC_INSTR_AVX512:return nc_cpu_has_avx512f(); default:return 0; }
 #elif defined(__aarch64__) || defined(_M_ARM64)
-    switch(f){ case NC_INSTR_SCALAR: case NC_INSTR_NEON: case NC_INSTR_AES: case NC_INSTR_SHA: case NC_INSTR_PCLMULQDQ: return 1; default:return 0; }
+    switch(f){ case NC_INSTR_SCALAR: case NC_INSTR_NEON: case NC_INSTR_AES: case NC_INSTR_SHA: case NC_INSTR_PCLMULQDQ: return 1; case NC_INSTR_SVE: return nc_asm_simd_family_available(NC_ASM_SIMD_ARM64_SVE); case NC_INSTR_SVE2: return nc_asm_simd_family_available(NC_ASM_SIMD_ARM64_SVE2); case NC_INSTR_SME: return nc_asm_simd_family_available(NC_ASM_SIMD_ARM64_SME); case NC_INSTR_SME2: return nc_asm_simd_family_available(NC_ASM_SIMD_ARM64_SME2); default:return 0; }
 #else
     return f==NC_INSTR_SCALAR;
 #endif

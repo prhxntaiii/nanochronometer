@@ -205,7 +205,7 @@ class InstructionResult(ctypes.Structure):
     ]
 class SideChannelResult(ctypes.Structure):
     _fields_ = [("status", ctypes.c_int), ("cached_cycles", ctypes.c_uint64), ("flushed_cycles", ctypes.c_uint64), ("prefetched_cycles", ctypes.c_uint64), ("threshold_cycles", ctypes.c_uint64), ("separation_score", ctypes.c_double)]
-NC_INSTR_SCALAR=0; NC_INSTR_AES=1; NC_INSTR_SHA=2; NC_INSTR_PCLMULQDQ=3; NC_INSTR_CRC32=4; NC_INSTR_SSE2=5; NC_INSTR_AVX2=6; NC_INSTR_AVX512=7; NC_INSTR_NEON=8; NC_INSTR_SVE=9; NC_INSTR_SVE2=10; NC_INSTR_SME=11
+NC_INSTR_SCALAR=0; NC_INSTR_AES=1; NC_INSTR_SHA=2; NC_INSTR_PCLMULQDQ=3; NC_INSTR_CRC32=4; NC_INSTR_SSE2=5; NC_INSTR_AVX2=6; NC_INSTR_AVX512=7; NC_INSTR_NEON=8; NC_INSTR_SVE=9; NC_INSTR_SVE2=10; NC_INSTR_SME=11; NC_INSTR_SME2=12
 
 def bind_instruction_api(lib):
     bind_toolkit(lib)
