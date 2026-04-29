@@ -1,3 +1,5 @@
+![Logo](assets/nanochronometer-logo.svg)
+
 # NanoChronometer
 
 High-resolution stopwatch and microbenchmark GUI for Windows x64. The timing core reads the CPU Time Stamp Counter (TSC) through hand-written x86-64 assembly, calibrates it against `QueryPerformanceCounter`, and exposes both a reusable C API and a Win32 GUI.
