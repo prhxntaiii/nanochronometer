@@ -2,348 +2,316 @@
 
 # NanoChronometer
 
-High-resolution stopwatch and microbenchmark GUI for Windows x64. The timing core reads the CPU Time Stamp Counter (TSC) through hand-written x86-64 assembly, calibrates it against `QueryPerformanceCounter`, and exposes both a reusable C API and a Win32 GUI.
+High-resolution nanosecond stopwatch, microbenchmark suite, and timing library for Windows and Linux, targeting x64 and ARM64. The timing core reads hardware counters (TSC on x64, `CNTVCT_EL0` on ARM64) through hand-written assembly, calibrates them against monotonic system time, and exposes a C API, a Win32 GUI, and a CLI.
 
 ```
 00:00:12:347:891:042
 hh:mm:ss:mmm:uuu:nnn
 ```
 
-## What changed in this version
+---
 
-- The benchmark panel now has three real modes:
-  - **Mode 1: CPU/timer ISA benchmark** - runs only counter/timer backends: legacy scalar ASM, MMX, SSE/SSE2/SSE3/SSSE3/SSE4.1/SSE4.2, AVX, F16C, FMA, AVX2, AVX-VNNI, AVX-512 and AVX-512 VNNI.
-  - **Mode 2: OpenSSL EVP benchmark** - runs real OpenSSL EVP calls such as AES-256-GCM, SHA-256, and ChaCha20-Poly1305.
-  - **Mode 3: libsodium benchmark** - runs real libsodium calls such as AES-256-GCM when available, `crypto_hash_sha256`, and ChaCha20-Poly1305-IETF.
-- `bench_kernels.c` and `bench_kernels_avx2.c` split portable/SSE-family kernels from AVX2 kernels so the timing library itself is no longer compiled with global `/arch:AVX2`.
-- `build_all.bat` no longer contains corrupted paths such as `dist\assets` with control characters.
-- `CMakeLists.txt` has been repaired and no longer has the broken nested `if()` block.
-- DLL export files now include the CPU feature API declared in `nanochrono.h`.
-- The stopwatch stop/pause accumulation bug has been fixed.
-- Benchmark log access is protected by a `CRITICAL_SECTION`.
+## Repository layout
 
-## Features
+```
+nanochrono.h / nanochrono.c       Public C API and high-level implementation
+src/                               Core library sources
+  nanochrono_runtime.c             Backend selection, calibration, TSC/counter reads
+  nanochrono_instruction.c         Instruction-family dispatch and availability checks
+  nanochrono_sidechannel.c         Defensive timing-audit and cache-probe API
+  platform/
+    android/nanochrono_android.c   Android privilege policy and backend selection
+    windows/compat_msvcrt.c        MSVC CRT compatibility shim
+    windows/nanochrono_arm64_x86_compat.c  x86 API stubs for ARM64 Windows
+gui/                               Win32 GUI sources (Windows only)
+  main.c / main_x64.c / main_arm64.c  GUI entry point (arch-selected by CMake)
+  bench_kernels.c                  Scalar/SSE timer-family benchmark kernels
+  bench_kernels_avx2.c             AVX/F16C/FMA/AVX2/AVX-512 benchmark kernels
+  bench_kernels.h
+  app.rc / resource.h              Win32 icon and resource wiring
+cli/
+  nanochrono_cli.c                 Command-line runner and CSV exporter
+asm/
+  x64/{linux,windows}/             NASM .asm files for every x64 ISA family
+  arm64/{linux,windows,android}/   GNU .S files for scalar, NEON, SVE, SVE2, SME, SME2
+externals/
+  x64/{linux,windows}/{openssl,libsodium}/
+  arm64/{linux,windows,android}/{boringssl,libsodium}/
+assets/
+  font/                            Drop a .ttf/.otf here for a custom GUI font
+  nanochrono.ico
+wrappers/                          Thin FFI wrappers: Rust, Go, C#, Java, Node.js, Zig, Lua
+python/                            Python ctypes package (nanochronometer/)
+scripts/                           Build helper scripts
+```
 
-- **Nanosecond-format display** using calibrated TSC ticks.
-- **Dual ASM timing backends**:
-  - Legacy backend: CPUID-serialized TSC reads and SSE2 memory helpers.
-  - AVX backend: LFENCE/RDTSCP TSC reads and AVX memory helpers.
-- **Runtime dispatch** via CPUID + XGETBV.
-- **SIMD backbuffer clear** using the best available assembly backend.
-- **Custom font embedding** from `assets\font\*.ttf` or `assets\font\*.otf`.
-- **Drift monitoring** against QPC in PPM.
-- **Benchmark log export** from the GUI.
+---
 
-## Important accuracy note
+## Building
 
-NanoChrono formats elapsed time down to nanoseconds, but that does not mean Windows scheduling, rendering, or user input are truly nanosecond-accurate. Direct TSC timing is useful for short intervals and microbenchmarks. For general wall-clock timing, `QueryPerformanceCounter` remains the safest Windows API. NanoChrono calibrates TSC against QPC and shows drift to make that tradeoff visible.
+### Prerequisites
 
-## CRT note
+- CMake 3.20 or later
+- x64: NASM 2.15 or later
+- ARM64: a compiler that accepts GNU assembly (GCC, Clang, or LLVM)
+- Windows GUI: MSVC (Visual Studio 2019/2022) or MinGW/LLVM, opened from a 64-bit prompt
 
-This project uses C runtime functions such as `calloc`, `free`, `snprintf`, and secure CRT formatting helpers. It uses `WinMainCRTStartup` for the GUI entry point, but it is **not** a strict no-CRT project. The build scripts keep `/GS` enabled instead of disabling stack cookies.
+### CMake options
 
-## Controls
+| Option | Default | Description |
+|--------|---------|-------------|
+| `NC_TARGET_ARCH` | `AUTO` | `AUTO`, `x64`, or `arm64` |
+| `NC_TARGET_OS` | `AUTO` | `AUTO`, `windows`, `linux`, or `android` |
+| `NC_CRYPTO_BACKEND` | `AUTO` | `AUTO`, `OPENSSL`, `BORINGSSL`, `LIBSODIUM`, `BOTH`, or `NONE` |
+| `NC_BUILD_GUI` | `OFF` | Build the Win32 GUI executable |
+| `NC_BUILD_CLI` | `ON` | Build the CLI executable |
+| `NC_BUILD_SHARED` | `ON` | Build shared library |
+| `NC_BUILD_STATIC` | `ON` | Build static library |
+| `NC_ANDROID_LIBRARY_ONLY` | `ON` | Android NDK path: emit only `.so`/`.a`, no CLI |
 
-| Key | Action |
-|-----|--------|
-| `Space` / `P` | Start, pause, resume |
-| `S` | Stop and keep elapsed time |
-| `R` | Reset |
-| `B` | Show/hide benchmark panel |
-| `M` | Toggle nano/simple display mode |
-| `ESC` | Exit |
-| Drag | Move borderless window |
+### Windows — MSVC + Ninja (recommended)
 
-## Prerequisites
-
-- Windows 10 or later, x86-64.
-- MSVC from Visual Studio 2019/2022, opened from an **x64 Native Tools Command Prompt**.
-- NASM 2.15 or newer.
-- Python 3 is optional and only used for icon generation.
-- Optional bundled crypto libraries under `externals\openssl` and/or `externals\libsodium` for benchmark modes 2 and 3.
-
-
-### Windows crypto link notes
-
-When linking the bundled static OpenSSL `libcrypto.lib`, the executable/DLLs also need Windows system import libraries: `advapi32.lib`, `crypt32.lib`, `ws2_32.lib`, `user32.lib`, and `bcrypt.lib`. `build_all.bat` and `CMakeLists.txt` add these automatically.
-
-The bundled `externals/libsodium/lib/libsodium.lib` is treated as a static library when `externals/libsodium/bin/libsodium.dll` is absent. In that case the build defines `SODIUM_STATIC` automatically so symbols such as `sodium_init` resolve correctly instead of being emitted as `__imp_sodium_init`.
-
-## Building with the batch script
+From an x64 Native Tools Command Prompt:
 
 ```bat
-build_all.bat
+cmake -S . -B build -G Ninja -DNC_CRYPTO_BACKEND=AUTO -DNC_BUILD_GUI=ON
+cmake --build build
 ```
 
-Useful variants:
+### Windows — MinGW + Ninja
 
 ```bat
-build_all.bat REBUILD
-build_all.bat CLEAN
-build_all.bat LIBS
-build_all.bat GUI
-build_all.bat OPENSSL
-build_all.bat LIBSODIUM
-build_all.bat BOTH
+cmake -S . -B build -G Ninja -DNC_CRYPTO_BACKEND=AUTO -DNC_BUILD_GUI=ON
+cmake --build build
 ```
 
-The default `AUTO` crypto mode chooses `BOTH` if both import libraries are present, otherwise the one it finds.
-
-Output layout:
-
-```text
-dist\
-  nanochrono_gui.exe
-  assets\
-  dynamic_libs\
-    bin\
-      nanochrono.dll
-      nanochrono_avx.dll
-    include\
-      nanochrono.h
-    lib\
-      nanochrono.lib
-      nanochrono_avx.lib
-  static_libs\
-    include\
-      nanochrono.h
-      bench_kernels.h
-    lib\
-      legacy\nanochrono_static.lib
-      avx\nanochrono_avx_static.lib
-```
-
-
-### Windows crypto link notes
-
-When linking the bundled static OpenSSL `libcrypto.lib`, the executable/DLLs also need Windows system import libraries: `advapi32.lib`, `crypt32.lib`, `ws2_32.lib`, `user32.lib`, and `bcrypt.lib`. `build_all.bat` and `CMakeLists.txt` add these automatically.
-
-The bundled `externals/libsodium/lib/libsodium.lib` is treated as a static library when `externals/libsodium/bin/libsodium.dll` is absent. In that case the build defines `SODIUM_STATIC` automatically so symbols such as `sodium_init` resolve correctly instead of being emitted as `__imp_sodium_init`.
-
-## Building with CMake
+ARM64 with llvm-mingw:
 
 ```bat
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DNC_CRYPTO_BACKEND=BOTH
-cmake --build build --config Release
+set PATH=C:\llvm-mingw\bin;%PATH%
+cmake -S . -B build -G Ninja -DNC_TARGET_ARCH=arm64 -DNC_BUILD_GUI=ON
+cmake --build build
 ```
 
-Valid values for `NC_CRYPTO_BACKEND` are `AUTO`, `OPENSSL`, `LIBSODIUM`, and `BOTH`.
+### Linux — x64
 
-## Benchmark modes
+```sh
+cmake -S . -B build -G "Unix Makefiles" -DNC_CRYPTO_BACKEND=AUTO
+cmake --build build
+```
 
-### Mode 1: CPU intrinsics
+### Linux — ARM64
 
-Runs NanoChrono's own intrinsic kernels. The timing path is intentionally low-level and CPU-feature-oriented. The AVX2 code lives in `bench_kernels_avx2.c`, which is compiled separately with `/arch:AVX2` so `nanochrono.c` and the base benchmark kernels remain portable.
+```sh
+cmake -S . -B build -G Ninja -DNC_TARGET_ARCH=arm64 -DNC_CRYPTO_BACKEND=AUTO
+cmake --build build
+```
 
-### Mode 2: OpenSSL EVP
+### Android — NDK library (library only, no CLI)
 
-Runs real EVP operations. Depending on the selected row, it benchmarks AES-256-GCM, SHA-256, or ChaCha20-Poly1305 through OpenSSL's normal provider/dispatch path.
+```sh
+cmake -S . -B build -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
+  -DNC_TARGET_ARCH=arm64 -DNC_TARGET_OS=android \
+  -DNC_ANDROID_LIBRARY_ONLY=ON
+cmake --build build
+```
 
-### Mode 3: libsodium
+### Android — Termux CLI
 
-Runs real libsodium operations. AES-GCM rows use `crypto_aead_aes256gcm_encrypt` when libsodium reports it is available; otherwise they fall back to ChaCha20-Poly1305-IETF. SHA rows use `crypto_hash_sha256`.
+```sh
+pkg install clang cmake ninja make
+./scripts/build_termux_arm64_cli.sh
+```
 
-## C API example
+See [`TERMUX_ANDROID_CLI.md`](TERMUX_ANDROID_CLI.md) for install options.
+
+### Build output layout
+
+```
+build/
+  static/
+    bin/   nanochrono_cli[.exe]  nanochrono_gui[.exe]
+    lib/   libnanochrono.a  (or nanochrono.lib on MSVC)
+    include/  nanochrono.h
+  dynamic/
+    lib/   libnanochrono.so  (or nanochrono.dll + import lib)
+    include/  nanochrono.h
+```
+
+---
+
+## C API quick start
 
 ```c
 #include "nanochrono.h"
 
-nc_ctx_t *ctx = nc_create();
+nc_ctx_t *ctx = nc_create();   // auto-selects best backend
 
 nc_start(ctx);
-/* work */
+/* ... work ... */
 uint64_t ns = nc_elapsed_ns(ctx);
 
 char buf[32];
 nc_format_ns(ns, buf, sizeof(buf));
+printf("%s\n", buf);   // e.g. "00:00:00:000:042:317"
 
 nc_destroy(ctx);
 ```
 
-## Architecture
+Key API functions:
 
-```text
-nanochrono_legacy.asm   CPUID/RDTSC/SSE2 backend
-nanochrono_avx.asm      LFENCE/RDTSCP/AVX backend
-nanochrono.c            high-level C API, calibration, drift tracking
-bench_kernels.c         scalar/MMX/SSE timer-family benchmark kernels
-bench_kernels_avx2.c    AVX/F16C/FMA/AVX2/AVX512 timer-family benchmark kernels
-main.c                  Win32 GUI, state machine, benchmark orchestration
-app.rc                  icon/resource wiring
+| Function | Description |
+|----------|-------------|
+| `nc_create()` / `nc_destroy()` | Allocate/free a timing context |
+| `nc_start()` / `nc_elapsed_ns()` | Start timer and read elapsed nanoseconds |
+| `nc_elapsed_us()` / `nc_elapsed_ms()` | Elapsed in microseconds / milliseconds |
+| `nc_format_ns()` / `nc_format_elapsed()` | Format to `hh:mm:ss:mmm:uuu:nnn` string |
+| `nc_sleep_us()` | Precision spin-sleep |
+| `nc_tsc_hz()` | Calibrated TSC frequency |
+| `nc_drift_ppm()` | TSC drift vs QPC/monotonic clock in PPM |
+| `nc_nanoclock_snapshot()` | Full snapshot: wall, monotonic, raw counters, best route |
+| `nc_measure_ffi_overhead_cycles()` | Measure FFI/wrapper call overhead |
+
+The complete API is declared in `nanochrono.h`.
+
+---
+
+## GUI (Windows)
+
+The Win32 GUI displays elapsed time in nanosecond format and includes a benchmark panel.
+
+### Controls
+
+| Key | Action |
+|-----|--------|
+| `Space` / `P` | Start, pause, resume |
+| `S` | Stop |
+| `R` | Reset |
+| `B` | Show/hide benchmark panel |
+| `M` | Toggle nano/simple display |
+| `C` | Toggle digital/analog clock |
+| `V` | Switch view (stopwatch / clock / timer) |
+| `Z` | Toggle local/UTC |
+| `ESC` | Exit |
+| Drag | Move borderless window |
+
+### Benchmark modes
+
+- **Mode 1 — CPU/timer ISA:** runs NanoChronometer's own timer kernels across every supported instruction family (legacy scalar ASM, MMX, SSE through SSE4.2, AVX, F16C, FMA, AVX2, AVX-VNNI, AVX-512, AVX-512 VNNI). Rows unavailable on the current CPU are shown as `NOT AVAILABLE` and not executed.
+- **Mode 2 — OpenSSL EVP:** AES-256-GCM, SHA-256, ChaCha20-Poly1305 through OpenSSL's EVP API.
+- **Mode 3 — libsodium:** same algorithms through libsodium (`crypto_aead_aes256gcm_encrypt`, `crypto_hash_sha256`, ChaCha20-Poly1305-IETF).
+
+Benchmark results can be exported as CSV from the GUI. For large sample counts use the CLI instead.
+
+### Safe start / illegal instruction
+
+If the GUI crashes on startup with an illegal instruction:
+
+```bat
+nanochrono_gui.exe --safe
 ```
 
-## Distribution notes
+or force a backend:
 
-Do not commit generated output from `obj\` or `dist\`. If you redistribute OpenSSL or libsodium binaries, include their license files and any required notices alongside your release package. See `THIRD_PARTY_NOTICES.md` for the expected release layout.
+```bat
+set NANOCHRONO_BACKEND=legacy
+nanochrono_gui.exe
+```
+
+Valid `NANOCHRONO_BACKEND` values: `legacy`, `mmx`, `sse`, `sse2`, `sse3`, `ssse3`, `sse41`, `sse42`, `avx`, `f16c`, `fma`, `avx2`, `avx-vnni`, `avx512`, `avx512vnni`.
+
+### Custom font
+
+Drop a single `.ttf` or `.otf` file into `assets/font/`. The GUI loads it automatically at startup and scales it to fit the display. If the folder is empty, it falls back to Consolas → Courier New.
+
+---
+
+## CLI
+
+```sh
+# Single snapshot
+nanochrono_cli --ns-clock-once
+
+# Live clock (updates every 250 ms)
+nanochrono_cli --ns-clock
+
+# Large benchmark run, CSV output
+nanochrono_cli --mode cpu --algo all --iterations 1000000 \
+  --kernel-loops 1 --warmup 10000 --pin-core 2 \
+  --priority high --csv results.csv
+
+# NTP clock
+nanochrono_cli --clock --nano --utc --ntp pool.ntp.org
+
+# Stable calibration
+nanochrono_cli --stable-calibrate --pin-cpu 0 --ms 1000
+
+# Side-channel audit
+nanochrono_cli --sct-audit
+
+# List available white-box microbench entries
+nanochrono_cli --catalog
+
+# FFI wrapper overhead
+nanochrono_cli --wrapper-overhead
+```
+
+---
+
+## Timer backends vs. crypto backends
+
+The nanosecond counter uses only timer backends — hardware cycle/tick counters. Crypto instruction extensions (AES-NI, SHA-NI, PCLMULQDQ, VAES) are **not** timer backends; they appear only in the OpenSSL/libsodium benchmark modes.
+
+**Valid timer backends:** legacy scalar ASM, MMX, SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, AVX, F16C, FMA, AVX2, AVX-VNNI, AVX-512, AVX-512 VNNI (x64); scalar, NEON, SVE, SVE2, SME, SME2 (ARM64).
+
+---
+
+## Accuracy note
+
+NanoChronometer formats time down to nanoseconds, but OS scheduling, context switches, and frequency scaling affect measured values. TSC timing is most useful for short intervals and microbenchmarks on a pinned, isolated core. `QueryPerformanceCounter` (Windows) or `clock_gettime(CLOCK_MONOTONIC)` (Linux) remain the safest general-purpose clocks. NanoChronometer calibrates TSC against those clocks and reports drift in PPM to make the tradeoff visible.
+
+For HFT / low-latency production use, see [`STABLE_CLOCK_CALIBRATION_HFT.md`](STABLE_CLOCK_CALIBRATION_HFT.md). For MiFID II / RTS 25 compliance, that document also lists the operational controls that must exist outside this library.
+
+---
+
+## Language wrappers
+
+Thin FFI wrappers under `wrappers/` cover: **Rust**, **Go**, **C#/.NET**, **Java (JNA)**, **Node.js (ffi-napi)**, **Zig**, and **LuaJIT**. A Python `ctypes` package is in `python/nanochronometer/`.
+
+All wrappers target the stable C ABI in `nanochrono.h`. Each wrapper's `overhead` example measures both the native timer overhead and the FFI/interpreter overhead on top of it.
+
+See [`NANOCLOCK_AND_WRAPPER_OVERHEAD.md`](NANOCLOCK_AND_WRAPPER_OVERHEAD.md) for details.
+
+---
+
+## Further documentation
+
+| File | Contents |
+|------|----------|
+| [`ASM_STABLE_CLOCK_NOTES.md`](ASM_STABLE_CLOCK_NOTES.md) | Exported ASM symbols for x64 and ARM64 raw counter reads |
+| [`NANOCLOCK_AND_WRAPPER_OVERHEAD.md`](NANOCLOCK_AND_WRAPPER_OVERHEAD.md) | Nanosecond clock API and FFI overhead measurement |
+| [`PRECISION_CLOCK_APP.md`](PRECISION_CLOCK_APP.md) | Clock-app layer: stopwatch, wall clock, NTP, CLI examples |
+| [`STABLE_CLOCK_CALIBRATION_HFT.md`](STABLE_CLOCK_CALIBRATION_HFT.md) | HFT-style calibration flow and production notes |
+| [`SIDECHANNEL_AUDIT.md`](SIDECHANNEL_AUDIT.md) | Defensive constant-time audit API, cache/load probes, white-box microbench catalog |
+| [`UNIFIED_DISPATCH_AND_INSTRUCTION_TOOLKIT.md`](UNIFIED_DISPATCH_AND_INSTRUCTION_TOOLKIT.md) | Runtime dispatch model, instruction-family APIs, new ASM symbols |
+| [`TERMUX_ANDROID_CLI.md`](TERMUX_ANDROID_CLI.md) | Native Android ARM64 CLI build inside Termux |
+| [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) | OpenSSL and libsodium license requirements for binary distribution |
+
+---
+
+## Crypto externals
+
+Pre-built static libraries are included under `externals/` for convenience:
+
+- x64: OpenSSL (`libcrypto.a` / `libcrypto.lib`) and libsodium
+- ARM64: BoringSSL (OpenSSL is not used on ARM64) and libsodium
+
+When linking the static OpenSSL archive on Windows, CMake automatically pulls in the required system libraries (`ws2_32`, `crypt32`, `bcrypt`, `advapi32`, `user32`). If distributing a binary that includes these libraries, include their license files — see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+---
 
 ## License
 
 MIT
-
-## 2026 update: GUI/CLI, SIMD families and safe CSV evidence
-
-This source package now includes both GUI and CLI workflows:
-
-- `nanochrono_gui.exe`: resizable/maximizable Win32 frontend. The benchmark panel
-  lists legacy scalar ASM, MMX, the SSE family, AVX, F16C,
-  FMA, AVX2, AVX-VNNI and AVX-512 feature rows. Rows are gated by CPUID/XGETBV so
-  unavailable instruction families are shown as `NOT AVAILABLE` and are not
-  executed.
-- `nanochrono_cli.exe`: CSV runner for large sample counts, e.g. 1,000,000
-  iterations.
-
-Example:
-
-```bat
-build_all.bat REBUILD BOTH
-
-dist\nanochrono_cli.exe --mode cpu --algo all --iterations 1000000 --kernel-loops 1 --warmup 10000 --pin-core 2 --priority high --csv results.csv
-```
-
-The high-level backend selector now reports a named backend instead of only
-`legacy`/`AVX`: legacy ASM, MMX, SSE/SSE2/SSE3/SSSE3/SSE4.1/SSE4.2, AVX, F16C,
-FMA, AVX2, AVX-VNNI and AVX-512 families are represented. AVX-family timing paths
-are only used after OSXSAVE/XGETBV verifies YMM/ZMM state support, which prevents
-illegal-instruction crashes on older CPUs.
-
-See `PMU_DISCLOSURE_LAB.md` for the safe scope of PMU/side-channel style
-measurements. This build intentionally avoids arbitrary external-PID profiling;
-CSV evidence is intended for self-process, child-process or synthetic lab targets.
-
-
-## ISA-isolated backend ASM files
-
-NanoChrono now keeps non-baseline instruction families in separate NASM source files:
-
-`nanochrono_mmx.asm`, `nanochrono_sse.asm`, `nanochrono_sse2.asm`, `nanochrono_sse3.asm`,
-`nanochrono_ssse3.asm`, `nanochrono_sse4.asm`, `nanochrono_sse41.asm`,
-`nanochrono_sse42.asm`, `nanochrono_f16c.asm`, `nanochrono_fma.asm`,
-`nanochrono_avx2.asm`, `nanochrono_avx512.asm`,
-`nanochrono_avx512_vnni.asm`, and `nanochrono_avx_vnni.asm`.
-
-The unified GUI/CLI links all of them, but `nanochrono.c` dispatches only after CPUID
-and XGETBV checks. This means unsupported opcodes can exist in the executable without
-causing `illegal instruction`; the crash only happens if the unsupported routine is
-actually called, and the dispatcher prevents that.
-
-AVX-VNNI is separate from AVX-512 VNNI. AVX-VNNI uses the CPUID leaf 7, subleaf 1
-EAX bit 4 capability and YMM OS state, while AVX-512 VNNI uses leaf 7, subleaf 0
-ECX bit 11 plus ZMM OS state.
-
-
-## Timer backend vs crypto provider
-
-The status bar reports only the active timer backend. It must never show AES-NI, PCLMULQDQ, SHA-NI or VAES as the counter backend. Those are crypto acceleration features and are measured through OpenSSL EVP or libsodium benchmark modes. Valid counter backends are legacy scalar ASM, MMX, SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, AVX, F16C, FMA, AVX2, AVX-VNNI, AVX-512 and AVX-512 VNNI.
-
-## 2026 portability update
-
-This tree was reorganized for portable native libraries and Python FFI/wheel use:
-
-- x64 assembler is kept as NASM `.asm` under:
-  - `asm/x64/windows`
-  - `asm/x64/linux`
-- ARM64 assembler is kept as `.S` under:
-  - `asm/arm64/windows`
-  - `asm/arm64/linux`
-- ARM64 families are split into scalar legacy, NEON, SVE, SVE2, SME, and SME2 files so runtime code can select a safe implementation and avoid illegal-instruction faults.
-- External crypto layout is architecture/platform-specific:
-  - `externals/x64/windows/{openssl,libsodium}`
-  - `externals/x64/linux/{openssl,libsodium}`
-  - `externals/arm64/windows/{boringssl,libsodium}`
-  - `externals/arm64/linux/{boringssl,libsodium}`
-- OpenSSL is intentionally not used for ARM64; use BoringSSL and/or libsodium there.
-- CMake supports Ninja and Unix Makefiles. MSVC and MinGW builds are both supported for the core shared/static libraries.
-- Added FFI/interpreted-language overhead APIs:
-  - `nc_measure_ffi_overhead_cycles(ctx, iterations)`
-  - `nc_measure_call_overhead_cycles(ctx, callback, arg, iterations)`
-- Added a Python package skeleton (`pyproject.toml`, `python/nanochronometer`) that loads the native DLL/SO through `ctypes`. Set `NANOCHRONO_LIB` if the library is not beside the package or in the working directory.
-
-### Build examples
-
-MSVC + Ninja from an x64 Developer Command Prompt:
-
-```bat
-cmake -S . -B build-msvc-ninja -G Ninja -DNC_CRYPTO_BACKEND=AUTO
-cmake --build build-msvc-ninja --config Release
-```
-
-MinGW + Ninja:
-
-```bat
-cmake -S . -B build-mingw-ninja -G Ninja -DNC_CRYPTO_BACKEND=AUTO -DNC_BUILD_GUI=OFF
-cmake --build build-mingw-ninja
-```
-
-Linux + Unix Makefiles:
-
-```sh
-cmake -S . -B build-unix -G "Unix Makefiles" -DNC_CRYPTO_BACKEND=AUTO
-cmake --build build-unix
-```
-
-Python wheel metadata/package:
-
-```sh
-python -m build
-```
-
-The wheel wrapper is pure Python and expects a previously built `nanochrono` native library (`nanochrono.dll`, `libnanochrono.so`, or `libnanochrono.dylib`).
-
-## Language wrappers
-
-NanoChronometer now ships wrapper skeletons under `wrappers/` for Rust, Go, C#/.NET, Java/JNA, Node.js, Zig and LuaJIT. These are intentionally thin so you can measure the real overhead of calling into the native library from each runtime.
-
-Typical workflow:
-
-1. Build `nanochrono` as shared or static with CMake.
-2. Put `nanochrono.dll`, `libnanochrono.so`, or `libnanochrono.dylib` where the runtime loader can find it.
-3. Run the `overhead` example for the wrapper you want to benchmark.
-
-Examples measure both native timer overhead and FFI/callback overhead, which is useful when comparing Python wheels, Rust FFI, Go/cgo, .NET P/Invoke, Java/JNA, Node ffi-napi, Zig and LuaJIT.
-
-## 2.0.0 unified instruction toolkit
-
-NanoChronometer now follows the OpenSSL/FFmpeg style: build one `nanochrono` library per OS/architecture and dispatch instruction families at runtime instead of producing one library per instruction set. x64 uses NASM `.asm`; ARM64 uses assembler `.S`. Unsupported instruction families return `NC_ERR_UNSUPPORTED` to avoid `illegal instruction`.
-
-See `UNIFIED_DISPATCH_AND_INSTRUCTION_TOOLKIT.md` for the new ASM symbols, C APIs, crypto timing helpers and binding notes.
-
-
-## Side-channel audit and pro benchmark modes
-
-This build includes a defensive timing-audit API in the library, not only in the UI/CLI:
-
-- `NC_BENCHMARK_BLACK_BOX_CRYPTO`: measures public EVP / BoringSSL / libsodium calls.
-- `NC_BENCHMARK_GRAY_BOX_INTERNAL`: measures internal block-level kernels when available.
-- `NC_BENCHMARK_WHITE_BOX_ASM`: measures direct x64/ARM64 assembly microkernels.
-
-The public catalog API (`nc_microbench_catalog_count`, `nc_microbench_catalog_entry`,
-`nc_microbench_run`) exposes approximately 300 generated x64 white-box assembly
-functions and 300 generated ARM64 white-box assembly functions. Optional x64 ISA
-families are guarded by `nc_microbench_available()` so callers can avoid illegal
-instruction faults.
-
-Defensive side-channel measurement is exposed through
-`nc_sidechannel_audit_constant_time()`, which runs fixed-vs-random local timing
-samples and reports Welch t-score, cycle statistics, and a heuristic leak flag.
-It is designed for constant-time validation of code the caller owns; it does not
-implement secret recovery or cross-process attack orchestration.
-
-Nanosecond stopwatch helpers are also available through `nc_stopwatch_ns_*`.
-
-## Android Termux CLI
-
-NanoChronometer can also be built as a native Android ARM64 executable inside
-Termux. This is separate from the Android NDK library-only build.
-
-```sh
-pkg install clang cmake ninja make git
-./scripts/build_termux_arm64_cli.sh
-```
-
-Output:
-
-```text
-build/termux-arm64/static/bin/nanochrono_cli
-```
-
-See `TERMUX_ANDROID_CLI.md` for install options and notes.
