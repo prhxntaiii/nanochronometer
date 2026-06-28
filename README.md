@@ -1,4 +1,4 @@
-![Logo](assets/nanochronometer-logo.svg)
+![Logo](assets/nanochronometer_logo.svg)
 
 # NanoChronometer
 
