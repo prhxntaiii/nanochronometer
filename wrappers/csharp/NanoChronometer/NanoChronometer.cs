@@ -31,6 +31,8 @@ public sealed class NanoChrono : IDisposable
     [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)] private static extern ulong nc_measure_callback_min_cycles(IntPtr ctx, VoidCallback cb, IntPtr arg, uint iterations);
     [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)] private static extern int nc_analyze_samples([In] ulong[] samples, uint count, out SampleStats stats);
     [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)] private static extern double nc_welch_t_score([In] ulong[] a, uint na, [In] ulong[] b, uint nb);
+    [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)] private static extern int nc_feature_available(string name);
+    [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)] private static extern IntPtr nc_hw_selected_name();
 
     public NanoChrono()
     {
@@ -49,6 +51,8 @@ public sealed class NanoChrono : IDisposable
     public ulong CallbackMinCycles(VoidCallback cb, uint iterations = 10000) => nc_measure_callback_min_cycles(ctx, cb, IntPtr.Zero, iterations);
     public static bool AnalyzeSamples(ulong[] samples, out SampleStats stats) => nc_analyze_samples(samples, (uint)samples.Length, out stats) != 0;
     public static double WelchTScore(ulong[] a, ulong[] b) => nc_welch_t_score(a, (uint)a.Length, b, (uint)b.Length);
+    public bool FeatureAvailable(string name) => nc_feature_available(name) != 0;
+    public string HwBackendName() => Marshal.PtrToStringAnsi(nc_hw_selected_name()) ?? "unknown";
 
     public void Dispose()
     {

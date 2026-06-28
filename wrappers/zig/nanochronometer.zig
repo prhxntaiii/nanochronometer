@@ -20,6 +20,8 @@ pub const NanoChronometer = struct {
     pub fn elapsedNs(self: *NanoChronometer) u64 { return c.nc_elapsed_ns(self.ctx); }
     pub fn nativeOverheadCycles(self: *NanoChronometer) u64 { return c.nc_measure_overhead_cycles(self.ctx); }
     pub fn ffiOverheadCycles(self: *NanoChronometer, iterations: u32) u64 { return c.nc_measure_ffi_overhead_cycles(self.ctx, iterations); }
+    pub fn featureAvailable(_: *NanoChronometer, name: [*:0]const u8) bool { return c.nc_feature_available(name) != 0; }
+    pub fn hwBackendName(_: *NanoChronometer) [*:0]const u8 { return c.nc_hw_selected_name(); }
 };
 
 pub fn welchTScore(a: []const u64, b: []const u64) f64 {

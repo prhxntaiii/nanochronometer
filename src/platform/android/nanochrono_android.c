@@ -97,6 +97,24 @@
 #  define __NR_perf_event_open 241
 #endif
 
+/*
+ * nc_is_android() — returns 1 on Android, 0 on all other platforms.
+ *
+ * Used by nc_hw_dispatch to enforce the sandbox invariant:
+ *   Android MUST use CNTVCT_EL0 only. Loading kernel modules is prohibited.
+ *   The dispatcher's check functions apply absorption:
+ *     cntpct_check = !nc_is_android() && nc_hw_dev_pmu_ok()   [Linux only]
+ *     cntvct_check = nc_hw_cntvct_ok()                         [always 1 on ARM64]
+ */
+NC_API int nc_is_android(void)
+{
+#if defined(__ANDROID__)
+    return 1;
+#else
+    return 0;
+#endif
+}
+
 static void nc_android_copy_(char *dst, size_t cap, const char *src) {
     if (!dst || !cap) return;
     if (!src) src = "";

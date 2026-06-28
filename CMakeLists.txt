@@ -6,37 +6,26 @@ option(NC_BUILD_STATIC "Build static library" ON)
 option(NC_BUILD_GUI "Build Win32 GUI executable on Windows targets" OFF)
 option(NC_BUILD_CLI "Build CLI executable when supported" ON)
 option(NC_ANDROID_LIBRARY_ONLY "Android NDK-style build emits only libnanochrono.so/.a; set OFF for native Termux CLI builds" ON)
-option(NC_PREFER_MINGW_STATIC_A "Prefer MinGW static .a archives from externals over import libs" ON)
+option(NC_LINK_STATIC "Link libcrypto from system as a static archive (.a) instead of the default shared library" OFF)
 
 set(NC_TARGET_ARCH "AUTO" CACHE STRING "Target CPU architecture: AUTO, x64, arm64")
 set_property(CACHE NC_TARGET_ARCH PROPERTY STRINGS AUTO x64 arm64)
 set(NC_TARGET_OS "AUTO" CACHE STRING "Target OS ABI: AUTO, windows, linux, android")
 set_property(CACHE NC_TARGET_OS PROPERTY STRINGS AUTO windows linux android)
 set(NC_ANDROID_API "24" CACHE STRING "Android API level used by helper scripts/toolchain builds")
-set(NC_EXTERNAL_LINKAGE "AUTO" CACHE STRING "External crypto library linkage: AUTO, STATIC, SHARED")
-set_property(CACHE NC_EXTERNAL_LINKAGE PROPERTY STRINGS AUTO STATIC SHARED)
-set(NC_CRYPTO_BACKEND "AUTO" CACHE STRING "AUTO;OPENSSL;BORINGSSL;LIBSODIUM;BOTH;NONE")
+set(NC_CRYPTO_BACKEND "AUTO" CACHE STRING "Crypto backend selection: AUTO, OPENSSL, NONE")
+set_property(CACHE NC_CRYPTO_BACKEND PROPERTY STRINGS AUTO OPENSSL NONE)
 set(NC_ARM64_ASM_ARCH "armv8-a+crypto" CACHE STRING "GNU/Clang -march value used for ARM64 assembly files with optional crypto instructions")
 set(NC_ARM64_SVE_ASM_ARCH "armv8.5-a+sve+sve2+crypto" CACHE STRING "GNU/Clang -march value for ARM64 SVE/SVE2 assembler files")
 set(NC_ARM64_SME_ASM_ARCH "armv9.2-a+sme+crypto" CACHE STRING "GNU/Clang -march value for ARM64 SME assembler files")
-# SME2 file uses an explicit .inst encoding for ZERO {ZT0}; only SME/ZA mnemonics
-# require assembler feature syntax, keeping older NDK/binutils usable when possible.
 set(NC_ARM64_SME2_ASM_ARCH "armv9.2-a+sme+crypto" CACHE STRING "GNU/Clang -march value for ARM64 SME2 assembler files")
 
 # Avoid GNUInstallDirs cross-compile warnings before CMake knows the target ABI.
-# The project only needs stable install directory names.
 set(CMAKE_INSTALL_BINDIR "bin" CACHE PATH "Install directory for executables")
 set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Install directory for libraries")
 set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE PATH "Install directory for headers")
 
-# Build tree package layout. Keep static and dynamic artifacts fully separated:
-#   <build>/static/{bin,include,lib}
-#   <build>/dynamic/{bin,include,lib}
-# Library filenames stay native to the compiler toolchain:
-#   MinGW/GNU: static/lib/libnanochrono.a and dynamic/lib/libnanochrono.dll.a
-#   MSVC:      static/lib/nanochrono.lib and dynamic/lib/nanochrono.lib
-# On Windows the shared runtime DLL is intentionally emitted to dynamic/lib,
-# not to a top-level bin directory.
+# Build tree package layout.
 set(NC_STATIC_ROOT "${CMAKE_BINARY_DIR}/static")
 set(NC_DYNAMIC_ROOT "${CMAKE_BINARY_DIR}/dynamic")
 set(NC_STATIC_BIN_DIR "${NC_STATIC_ROOT}/bin")
@@ -84,9 +73,6 @@ else()
   message(FATAL_ERROR "Unsupported NC_TARGET_ARCH=${NC_TARGET_ARCH}; use AUTO, x64, or arm64")
 endif()
 
-# CMAKE_SIZEOF_VOID_P can be empty during cross builds if CMake cannot run/link
-# the probe executable. When NC_TARGET_ARCH is explicit, trust it and only fail
-# when CMake actually measured a non-64-bit ABI.
 if(DEFINED CMAKE_SIZEOF_VOID_P AND CMAKE_SIZEOF_VOID_P AND NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "NanoChronometer requires a 64-bit target")
 endif()
@@ -113,10 +99,6 @@ else()
   message(FATAL_ERROR "Unsupported NC_TARGET_OS=${NC_TARGET_OS}; use AUTO, windows, linux, or android")
 endif()
 
-# Android has two supported build shapes:
-#   1. NDK/library integration: libnanochrono.so + libnanochrono.a, no APK/Gradle/CLI.
-#   2. Native Termux CLI: set -DNC_ANDROID_LIBRARY_ONLY=OFF -DNC_BUILD_CLI=ON.
-# GUI remains disabled on Android.
 if(NC_OS STREQUAL "android")
   if(NC_ANDROID_LIBRARY_ONLY)
     if(NC_BUILD_CLI)
@@ -171,11 +153,6 @@ elseif(NC_ARCH STREQUAL "arm64")
     asm/arm64/${NC_ASM_PLATFORM}/nanochrono_arm64_sme2.S
     asm/arm64/${NC_ASM_PLATFORM}/nanochrono_instruction.S
     asm/arm64/${NC_ASM_PLATFORM}/nanochrono_microbench_generated.S)
-  # nanochrono_instruction.S contains optional ARMv8 Crypto extension opcodes
-  # such as AESE, SHA256H, and PMULL. Cross compilers often default to plain
-  # armv8-a, whose assembler rejects those mnemonics. Enable only the ARM64
-  # assembly sources, not the whole C project, so runtime feature detection
-  # still decides whether those routines are executed.
   if(NC_ARM64_ASM_ARCH AND CMAKE_ASM_COMPILER_ID MATCHES "GNU|Clang")
     set_source_files_properties(${NC_ASM_SOURCES} PROPERTIES
       COMPILE_OPTIONS "-march=${NC_ARM64_ASM_ARCH}")
@@ -200,208 +177,104 @@ else()
   message(FATAL_ERROR "Unsupported architecture: ${NC_ARCH}")
 endif()
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Crypto backend: system OpenSSL only (no externals/ directory).
+# The EVP shim (src/nc_evp_shim.c) resolves symbols at runtime via dlsym so
+# that missing EVP symbols degrade gracefully to "N/A" rather than hard-failing.
+# NC_LINK_STATIC=ON finds libcrypto.a from the system for the static library.
+# ─────────────────────────────────────────────────────────────────────────────
 add_library(nc_crypto_backend INTERFACE)
-set(NC_EXTERNAL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/externals/${NC_ARCH}/${NC_ASM_PLATFORM}")
-set(NC_LIBSODIUM_ROOT "${NC_EXTERNAL_ROOT}/libsodium")
-if(NC_ARCH STREQUAL "arm64")
-  set(NC_SSL_ROOT "${NC_EXTERNAL_ROOT}/boringssl")
-else()
-  set(NC_SSL_ROOT "${NC_EXTERNAL_ROOT}/openssl")
-endif()
-
-function(nc_pick_lib OUT ROOT NAME)
-  set(_paths "${ROOT}/lib" "${ROOT}/lib/${ANDROID_ABI}" "${ROOT}/lib64" "${ROOT}")
-  unset(_picked)
-  string(TOUPPER "${NC_EXTERNAL_LINKAGE}" _nc_external_linkage)
-
-  if(_nc_external_linkage STREQUAL "STATIC")
-    foreach(_candidate "lib${NAME}.a" "${NAME}.a")
-      foreach(_dir ${_paths})
-        if(EXISTS "${_dir}/${_candidate}")
-          set(_picked "${_dir}/${_candidate}")
-          break()
-        endif()
-      endforeach()
-      if(_picked)
-        break()
-      endif()
-    endforeach()
-  elseif(_nc_external_linkage STREQUAL "SHARED")
-    foreach(_candidate "lib${NAME}.so" "${NAME}.so" "${NAME}.dll" "lib${NAME}.dylib")
-      foreach(_dir ${_paths})
-        if(EXISTS "${_dir}/${_candidate}")
-          set(_picked "${_dir}/${_candidate}")
-          break()
-        endif()
-      endforeach()
-      if(_picked)
-        break()
-      endif()
-    endforeach()
-  endif()
-
-  if(NOT _picked AND MINGW AND NC_PREFER_MINGW_STATIC_A)
-    foreach(_candidate "lib${NAME}.a" "${NAME}.a")
-      foreach(_dir ${_paths})
-        if(EXISTS "${_dir}/${_candidate}")
-          set(_picked "${_dir}/${_candidate}")
-          break()
-        endif()
-      endforeach()
-      if(_picked)
-        break()
-      endif()
-    endforeach()
-  elseif(NOT _picked AND MSVC)
-    foreach(_candidate "${NAME}.lib" "lib${NAME}.lib")
-      foreach(_dir ${_paths})
-        if(EXISTS "${_dir}/${_candidate}")
-          set(_picked "${_dir}/${_candidate}")
-          break()
-        endif()
-      endforeach()
-      if(_picked)
-        break()
-      endif()
-    endforeach()
-  endif()
-
-  if(NOT _picked)
-    set(_find_var "${OUT}_FOUND")
-    unset(${_find_var} CACHE)
-    if(_nc_external_linkage STREQUAL "STATIC")
-      find_library(${_find_var} NAMES lib${NAME}.a ${NAME}.a PATHS ${_paths} NO_DEFAULT_PATH)
-    elseif(_nc_external_linkage STREQUAL "SHARED")
-      find_library(${_find_var} NAMES ${NAME} lib${NAME}.so ${NAME}.so PATHS ${_paths} NO_DEFAULT_PATH)
-    else()
-      find_library(${_find_var} NAMES ${NAME} lib${NAME} ${NAME}.lib lib${NAME}.a lib${NAME}.so PATHS ${_paths} NO_DEFAULT_PATH)
-    endif()
-    if(NOT "${${_find_var}}" STREQUAL "" AND NOT "${${_find_var}}" MATCHES "-NOTFOUND$")
-      set(_picked "${${_find_var}}")
-    endif()
-  endif()
-
-  set(${OUT} "${_picked}" PARENT_SCOPE)
-endfunction()
-
 string(TOUPPER "${NC_CRYPTO_BACKEND}" NC_CRYPTO_BACKEND)
-set(NC_FOUND_OPENSSL 0)
-set(NC_FOUND_LIBSODIUM 0)
-set(NC_CRYPTO_BACKEND_NAME "unlinked")
 
 if(NOT NC_CRYPTO_BACKEND STREQUAL "NONE")
-  nc_pick_lib(NC_CRYPTO_LIB "${NC_SSL_ROOT}" crypto)
-  nc_pick_lib(NC_SODIUM_LIB "${NC_LIBSODIUM_ROOT}" sodium)
-
-  if(NC_CRYPTO_LIB AND EXISTS "${NC_SSL_ROOT}/include/openssl/evp.h")
-    set(NC_FOUND_OPENSSL 1)
-  endif()
-  if(NC_SODIUM_LIB AND EXISTS "${NC_LIBSODIUM_ROOT}/include/sodium.h")
-    set(NC_FOUND_LIBSODIUM 1)
-  endif()
-
-  if(NC_CRYPTO_BACKEND STREQUAL "AUTO")
-    if(NC_FOUND_OPENSSL AND NC_FOUND_LIBSODIUM)
-      set(NC_CRYPTO_BACKEND BOTH)
-    elseif(NC_FOUND_OPENSSL)
-      if(NC_ARCH STREQUAL "arm64")
-        set(NC_CRYPTO_BACKEND BORINGSSL)
+  if(NC_OS STREQUAL "android")
+    # Android NDK bundles its own libcrypto via BoringSSL in the NDK sysroot.
+    # The EVP shim uses dlopen at runtime; no compile-time linkage needed here.
+    message(STATUS "NanoChronometer Android: EVP shim uses runtime dlopen for libcrypto")
+    set(NC_CRYPTO_BACKEND OPENSSL)
+  else()
+    if(NC_LINK_STATIC)
+      # Search for a system static archive (libcrypto.a).
+      find_library(NC_SYSTEM_CRYPTO_STATIC
+        NAMES libcrypto.a crypto
+        PATH_SUFFIXES lib lib64
+        DOC "System static libcrypto archive")
+      if(NC_SYSTEM_CRYPTO_STATIC AND NC_SYSTEM_CRYPTO_STATIC MATCHES "[.]a$")
+        message(STATUS "NanoChronometer static libcrypto: ${NC_SYSTEM_CRYPTO_STATIC}")
+        target_link_libraries(nc_crypto_backend INTERFACE "${NC_SYSTEM_CRYPTO_STATIC}")
+        if(NC_OS STREQUAL "linux" AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+          # Static OpenSSL may contain C++ objects (engine/provider layer).
+          target_link_libraries(nc_crypto_backend INTERFACE stdc++ dl pthread)
+        endif()
       else()
-        set(NC_CRYPTO_BACKEND OPENSSL)
+        message(WARNING "NC_LINK_STATIC=ON but no libcrypto.a found on system; falling back to shared libcrypto via EVP shim")
+        set(NC_LINK_STATIC OFF CACHE BOOL "" FORCE)
       endif()
-    elseif(NC_FOUND_LIBSODIUM)
-      set(NC_CRYPTO_BACKEND LIBSODIUM)
+    endif()
+
+    if(NOT NC_LINK_STATIC)
+      # Default: dynamic link via the EVP shim (dlopen at runtime).
+      # The shim handles missing symbols gracefully (N/A).
+      if(NC_OS STREQUAL "linux" OR NC_OS STREQUAL "android")
+        target_link_libraries(nc_crypto_backend INTERFACE dl)
+      endif()
+    endif()
+
+    # Find headers for compile-time type information only (no library path gating).
+    find_package(OpenSSL QUIET)
+    if(OpenSSL_FOUND OR OPENSSL_FOUND)
+      target_include_directories(nc_crypto_backend INTERFACE "${OPENSSL_INCLUDE_DIR}")
+      message(STATUS "NanoChronometer OpenSSL headers: ${OPENSSL_INCLUDE_DIR}")
     else()
-      set(NC_CRYPTO_BACKEND NONE)
+      # Try pkg-config as fallback for cross-compile environments.
+      find_package(PkgConfig QUIET)
+      if(PKG_CONFIG_FOUND)
+        pkg_check_modules(PC_OPENSSL QUIET openssl)
+        if(PC_OPENSSL_FOUND)
+          target_include_directories(nc_crypto_backend INTERFACE ${PC_OPENSSL_INCLUDE_DIRS})
+        endif()
+      endif()
     endif()
+
+    set(NC_CRYPTO_BACKEND OPENSSL)
   endif()
 
-  if(NC_CRYPTO_BACKEND MATCHES "OPENSSL|BORINGSSL|BOTH")
-    if(NOT NC_FOUND_OPENSSL)
-      message(FATAL_ERROR
-        "NC_CRYPTO_BACKEND=${NC_CRYPTO_BACKEND} needs libcrypto plus headers at ${NC_SSL_ROOT}. "
-        "Expected ${NC_SSL_ROOT}/lib/libcrypto.a or crypto.lib and ${NC_SSL_ROOT}/include/openssl/evp.h")
-    endif()
-    target_include_directories(nc_crypto_backend INTERFACE "${NC_SSL_ROOT}/include")
-    target_link_libraries(nc_crypto_backend INTERFACE "${NC_CRYPTO_LIB}")
-    # BoringSSL libcrypto.a contains C++ object files. With static archives,
-    # libstdc++ must appear after libcrypto.a in the final link line.
-    if((NC_OS STREQUAL "linux" OR NC_OS STREQUAL "android") AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-      target_link_libraries(nc_crypto_backend INTERFACE stdc++)
-    endif()
-  endif()
+  target_compile_definitions(nc_crypto_backend INTERFACE NC_USE_OPENSSL=1)
+  target_compile_definitions(nc_crypto_backend INTERFACE "NC_CRYPTO_BACKEND_NAME=\"openssl-shim\"")
 
-  if(NC_CRYPTO_BACKEND MATCHES "LIBSODIUM|BOTH")
-    if(NOT NC_FOUND_LIBSODIUM)
-      message(FATAL_ERROR
-        "NC_CRYPTO_BACKEND=${NC_CRYPTO_BACKEND} needs libsodium plus headers at ${NC_LIBSODIUM_ROOT}. "
-        "Expected ${NC_LIBSODIUM_ROOT}/lib/libsodium.a or sodium.lib and ${NC_LIBSODIUM_ROOT}/include/sodium.h")
-    endif()
-    target_include_directories(nc_crypto_backend INTERFACE "${NC_LIBSODIUM_ROOT}/include")
-    target_link_libraries(nc_crypto_backend INTERFACE "${NC_SODIUM_LIB}")
-    target_compile_definitions(nc_crypto_backend INTERFACE SODIUM_STATIC=1)
-  endif()
-
-  if(NC_CRYPTO_BACKEND STREQUAL "OPENSSL")
-    set(NC_CRYPTO_BACKEND_NAME "openssl")
-    target_compile_definitions(nc_crypto_backend INTERFACE NC_USE_OPENSSL=1)
-  elseif(NC_CRYPTO_BACKEND STREQUAL "BORINGSSL")
-    set(NC_CRYPTO_BACKEND_NAME "boringssl")
-    target_compile_definitions(nc_crypto_backend INTERFACE NC_USE_BORINGSSL=1)
-  elseif(NC_CRYPTO_BACKEND STREQUAL "LIBSODIUM")
-    set(NC_CRYPTO_BACKEND_NAME "libsodium")
-    target_compile_definitions(nc_crypto_backend INTERFACE NC_USE_LIBSODIUM=1)
-  elseif(NC_CRYPTO_BACKEND STREQUAL "BOTH")
-    set(NC_CRYPTO_BACKEND_NAME "openssl+libsodium")
-    target_compile_definitions(nc_crypto_backend INTERFACE NC_USE_OPENSSL=1 NC_USE_LIBSODIUM=1)
-  endif()
-
-  if(NOT NC_CRYPTO_BACKEND STREQUAL "NONE")
-    target_compile_definitions(nc_crypto_backend INTERFACE "NC_CRYPTO_BACKEND_NAME=\"${NC_CRYPTO_BACKEND_NAME}\"")
-  endif()
-
-  if(NC_OS STREQUAL "android" AND NC_CRYPTO_BACKEND MATCHES "OPENSSL|BORINGSSL|LIBSODIUM|BOTH")
+  if(NC_OS STREQUAL "android")
     target_link_libraries(nc_crypto_backend INTERFACE log)
   endif()
 
-  if(NC_OS STREQUAL "windows" AND NC_CRYPTO_BACKEND MATCHES "OPENSSL|BORINGSSL|LIBSODIUM|BOTH")
-    # Static OpenSSL/libsodium archives do not encode their Win32 system
-    # dependencies. Keep them after the crypto .a/.lib files in link order.
-    target_link_libraries(nc_crypto_backend INTERFACE ws2_32 crypt32 bcrypt advapi32 user32)
+  if(NC_OS STREQUAL "windows")
+    # Winsock for NTP queries and Windows crypto runtime deps.
+    target_link_libraries(nc_crypto_backend INTERFACE ws2_32 crypt32 bcrypt advapi32)
   endif()
 endif()
 
-message(STATUS "NanoChronometer arch=${NC_ARCH} platform=${NC_ASM_PLATFORM} crypto=${NC_CRYPTO_BACKEND} external_linkage=${NC_EXTERNAL_LINKAGE} mingw_static_a=${NC_PREFER_MINGW_STATIC_A}")
-message(STATUS "NanoChronometer external root=${NC_EXTERNAL_ROOT}")
-if(NC_ARCH STREQUAL "arm64")
-  message(STATUS "NanoChronometer arm64 asm march=${NC_ARM64_ASM_ARCH}")
+if(NC_CRYPTO_BACKEND STREQUAL "NONE")
+  target_compile_definitions(nc_crypto_backend INTERFACE "NC_CRYPTO_BACKEND_NAME=\"none\"")
 endif()
-message(STATUS "NanoChronometer libcrypto=${NC_CRYPTO_LIB}")
-message(STATUS "NanoChronometer libsodium=${NC_SODIUM_LIB}")
 
-# Linux cannot link non-PIC static crypto archives into a shared object:
-#   relocation R_X86_64_PC32 ... can not be used when making a shared object
-# The bundled Linux externals are static .a archives, so keep crypto enabled for
-# the static library / CLI and build libnanochrono.so without those backends.
+message(STATUS "NanoChronometer arch=${NC_ARCH} platform=${NC_ASM_PLATFORM} crypto=${NC_CRYPTO_BACKEND} static_link=${NC_LINK_STATIC}")
+
+# On Linux with dynamic EVP shim the shared library can always link crypto
+# because the shim calls dlopen at runtime (no static .a in the shared object).
 set(NC_SHARED_LINKS_CRYPTO 1)
-if((NC_OS STREQUAL "linux" OR NC_OS STREQUAL "android") AND NC_BUILD_SHARED AND NOT NC_CRYPTO_BACKEND STREQUAL "NONE")
-  set(_nc_shared_static_crypto 0)
-  if(NC_CRYPTO_BACKEND MATCHES "OPENSSL|BORINGSSL|BOTH" AND NC_CRYPTO_LIB MATCHES "[.]a$")
-    set(_nc_shared_static_crypto 1)
-  endif()
-  if(NC_CRYPTO_BACKEND MATCHES "LIBSODIUM|BOTH" AND NC_SODIUM_LIB MATCHES "[.]a$")
-    set(_nc_shared_static_crypto 1)
-  endif()
-  if(_nc_shared_static_crypto)
-    set(NC_SHARED_LINKS_CRYPTO 0)
-    message(WARNING "Static ${NC_OS} crypto archives may be unsafe to link into libnanochrono.so unless built with PIC; shared library will be built without crypto backends. The static library and CLI still link ${NC_CRYPTO_BACKEND}. Use -DNC_EXTERNAL_LINKAGE=SHARED with .so crypto libs, or rebuild externals with -fPIC if libnanochrono.so needs crypto.")
-  endif()
-endif()
 
-set(NC_CORE_SOURCES src/nanochrono_runtime.c src/nanochrono_instruction.c src/nanochrono_sidechannel.c src/platform/android/nanochrono_android.c src/platform/windows/compat_msvcrt.c ${NC_ASM_SOURCES})
+set(NC_CORE_SOURCES
+  src/nanochrono_runtime.c
+  src/nanochrono_instruction.c
+  src/nanochrono_sidechannel.c
+  src/nc_evp_shim.c
+  src/nc_hw_dispatch.c
+  src/platform/android/nanochrono_android.c
+  src/platform/windows/compat_msvcrt.c
+  ${NC_ASM_SOURCES})
 if(NC_ARCH STREQUAL "arm64" AND NC_OS STREQUAL "windows")
   list(APPEND NC_CORE_SOURCES src/nanochrono_arm64_x86_compat.c)
 endif()
+
 if(NC_BUILD_SHARED)
   nc_copy_public_header("${NC_DYNAMIC_INCLUDE_DIR}")
   add_library(nanochrono SHARED ${NC_CORE_SOURCES})
@@ -410,27 +283,24 @@ if(NC_BUILD_SHARED)
     LIBRARY_OUTPUT_DIRECTORY "${NC_DYNAMIC_LIB_DIR}"
     ARCHIVE_OUTPUT_DIRECTORY "${NC_DYNAMIC_LIB_DIR}")
   target_compile_definitions(nanochrono PRIVATE NANOCHRONO_EXPORTS)
-  target_include_directories(nanochrono PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(nanochrono PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
   if(NC_SHARED_LINKS_CRYPTO)
     target_link_libraries(nanochrono PRIVATE nc_crypto_backend)
   endif()
   if(NC_OS STREQUAL "linux" OR NC_OS STREQUAL "android")
     target_link_libraries(nanochrono PRIVATE m)
   elseif(NC_OS STREQUAL "windows")
-    # nanochrono_sidechannel.c uses Winsock APIs for NTP queries.
-    # Link ws2_32 explicitly even when crypto backends are disabled.
     target_link_libraries(nanochrono PRIVATE ws2_32)
   endif()
 endif()
 if(NC_BUILD_STATIC)
   nc_copy_public_header("${NC_STATIC_INCLUDE_DIR}")
   add_library(nanochrono_static STATIC ${NC_CORE_SOURCES})
-  target_include_directories(nanochrono_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(nanochrono_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries(nanochrono_static PUBLIC nc_crypto_backend)
   if(NC_OS STREQUAL "linux" OR NC_OS STREQUAL "android")
     target_link_libraries(nanochrono_static PUBLIC m)
   elseif(NC_OS STREQUAL "windows")
-    # Public because executables linking the static library must also link Winsock.
     target_link_libraries(nanochrono_static PUBLIC ws2_32)
   endif()
   set_target_properties(nanochrono_static PROPERTIES
@@ -467,7 +337,6 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI)
   if(NC_ARCH STREQUAL "x64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gui/bench_kernels_avx2.c")
     list(APPEND NC_GUI_SOURCES gui/bench_kernels_avx2.c)
   endif()
-  # GUI-only legacy benchmark ASM symbols: nc_bench_kernel_asm_legacy and nc_bench_kernel_mmx.
   if(NC_ARCH STREQUAL "x64" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/asm/x64/windows/bench_kernels_asm.asm")
     list(APPEND NC_GUI_SOURCES asm/x64/windows/bench_kernels_asm.asm)
   endif()
@@ -478,9 +347,6 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI)
   else()
     target_link_libraries(nanochrono_gui PRIVATE nanochrono)
   endif()
-  # The GUI calls OpenSSL EVP/libsodium directly for benchmark modes 2 and 3,
-  # so link the crypto backend here too. This propagates include paths,
-  # NC_USE_* compile definitions, and final link libraries into main.c.
   target_link_libraries(nanochrono_gui PRIVATE nc_crypto_backend)
   target_link_libraries(nanochrono_gui PRIVATE user32 gdi32 dwmapi winmm msimg32 comdlg32 comctl32 shell32 ws2_32)
   set_target_properties(nanochrono_gui PROPERTIES
@@ -490,11 +356,6 @@ if(NC_OS STREQUAL "windows" AND NC_BUILD_GUI)
     target_compile_definitions(nanochrono_gui PRIVATE NC_GUI_MINGW=1)
   endif()
   if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang" AND NC_ARCH STREQUAL "x64")
-    # GUI benchmark sources use x86 intrinsics directly. Keep them isolated from
-    # the core library and compile them with the exact feature flags required by
-    # the intrinsics they contain. This fixes MinGW GCC errors such as:
-    #   _mm_sha256rnds2_epu32: target specific option mismatch  -> needs -msha
-    #   _xgetbv: target specific option mismatch                -> needs -mxsave
     set_source_files_properties(${NC_GUI_MAIN_SOURCE} PROPERTIES
       COMPILE_OPTIONS "-mxsave;-Wno-unknown-pragmas")
     set_source_files_properties(gui/bench_kernels.c PROPERTIES

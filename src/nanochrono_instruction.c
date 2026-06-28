@@ -1,17 +1,9 @@
 #include "nanochrono.h"
+#include "nc_evp_shim.h"
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
-
-#if defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL)
-#include <openssl/sha.h>
-#include <openssl/hmac.h>
-#include <openssl/rand.h>
-#endif
-#if defined(NC_USE_LIBSODIUM)
-#include <sodium.h>
-#endif
 
 static uint64_t nc_tick_(nc_ctx_t *ctx){ return ctx ? nc_now_cycles(ctx) : nc_wall_time_ns(); }
 static uint64_t nc_to_ns_(nc_ctx_t *ctx, uint64_t c){ return ctx ? nc_cycles_to_ns(ctx,c) : c; }
@@ -84,44 +76,43 @@ uint64_t nc_measure_cache_probe_cycles(nc_ctx_t *ctx, const void *ptr, nc_sidech
 uint64_t nc_measure_branch_mispredict_cycles(nc_ctx_t *ctx, const uint8_t *pattern, size_t count, nc_instruction_result_t *out){ if(!pattern||!count){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SCALAR,0,0,0); return 0; } uint64_t s=nc_tick_(ctx), sum=nc_asm_branch_probe_loop(pattern,count), e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,NC_OK,NC_INSTR_SCALAR,d,count,sum); return d; }
 
 int nc_crypto_backend_mask(void){
-    int m=0;
-#if defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL)
-    m|=1;
-#endif
-#if defined(NC_USE_LIBSODIUM)
-    m|=2;
-#endif
+    nc_evp_shim_init();
+    int m = 0;
+    if (nc_evp_sha256_available() == NC_EVP_SYM_OK) m |= 1;
+    if (nc_evp_rand_available()   == NC_EVP_SYM_OK) m |= 4;
     return m;
 }
-uint64_t nc_crypto_rand_cycles(nc_ctx_t *ctx, void *out_buf, size_t bytes, nc_instruction_result_t *out){ if(!out_buf){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SCALAR,0,0,0); return 0; } uint64_t s=nc_tick_(ctx); int st=NC_ERR_CRYPTO_BACKEND;
-#if defined(NC_USE_LIBSODIUM)
-    randombytes_buf(out_buf,bytes); st=NC_OK;
-#elif defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL)
-    st=(RAND_bytes((unsigned char*)out_buf,(int)bytes)==1)?NC_OK:NC_ERR_CRYPTO_BACKEND;
-#else
-    memset(out_buf,0,bytes);
-#endif
-    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SCALAR,d,bytes,0); return d; }
-uint64_t nc_crypto_sha256_cycles(nc_ctx_t *ctx, const void *msg, size_t len, uint8_t out_digest[32], nc_instruction_result_t *out){ if(!msg||!out_digest){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SHA,0,0,0); return 0; } uint64_t s=nc_tick_(ctx); int st=NC_ERR_CRYPTO_BACKEND;
-#if defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL)
-    st=SHA256((const unsigned char*)msg,len,out_digest)?NC_OK:NC_ERR_CRYPTO_BACKEND;
-#elif defined(NC_USE_LIBSODIUM)
-    st=crypto_hash_sha256(out_digest,(const unsigned char*)msg,(unsigned long long)len)==0?NC_OK:NC_ERR_CRYPTO_BACKEND;
-#else
-    memset(out_digest,0,32);
-#endif
-    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SHA,d,len/64,0); return d; }
-uint64_t nc_crypto_hmac_sha256_cycles(nc_ctx_t *ctx, const void *key, size_t key_len, const void *msg, size_t msg_len, uint8_t out_mac[32], nc_instruction_result_t *out){ if(!key||!msg||!out_mac){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SHA,0,0,0); return 0; } uint64_t s=nc_tick_(ctx); int st=NC_ERR_CRYPTO_BACKEND;
-#if defined(NC_USE_OPENSSL) || defined(NC_USE_BORINGSSL)
-    unsigned int l=0; st=HMAC(EVP_sha256(),key,(int)key_len,(const unsigned char*)msg,msg_len,out_mac,&l)?NC_OK:NC_ERR_CRYPTO_BACKEND;
-#else
-    (void)key_len; memset(out_mac,0,32);
-#endif
-    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SHA,d,msg_len/64,0); return d; }
-uint64_t nc_crypto_aead_chacha20poly1305_cycles(nc_ctx_t *ctx, const uint8_t *key, const uint8_t *nonce, const uint8_t *aad, size_t aad_len, const uint8_t *msg, size_t msg_len, uint8_t *cipher, uint8_t tag[16], nc_instruction_result_t *out){ if(!key||!nonce||!msg||!cipher||!tag){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SCALAR,0,0,0); return 0; } uint64_t s=nc_tick_(ctx); int st=NC_ERR_CRYPTO_BACKEND;
-#if defined(NC_USE_LIBSODIUM)
-    unsigned long long clen=0; st=crypto_aead_chacha20poly1305_ietf_encrypt_detached(cipher,tag,&clen,msg,(unsigned long long)msg_len,aad,(unsigned long long)aad_len,NULL,nonce,key)==0?NC_OK:NC_ERR_CRYPTO_BACKEND;
-#else
-    (void)aad; (void)aad_len; memcpy(cipher,msg,msg_len); memset(tag,0,16);
-#endif
-    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SCALAR,d,msg_len/64,0); return d; }
+
+uint64_t nc_crypto_rand_cycles(nc_ctx_t *ctx, void *out_buf, size_t bytes, nc_instruction_result_t *out){
+    if(!out_buf){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SCALAR,0,0,0); return 0; }
+    uint64_t s=nc_tick_(ctx);
+    int st = nc_shim_rand_bytes(out_buf, bytes) == 0 ? NC_OK : NC_ERR_CRYPTO_BACKEND;
+    if(st != NC_OK) memset(out_buf, 0, bytes);
+    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SCALAR,d,bytes,0); return d;
+}
+
+uint64_t nc_crypto_sha256_cycles(nc_ctx_t *ctx, const void *msg, size_t len, uint8_t out_digest[32], nc_instruction_result_t *out){
+    if(!msg||!out_digest){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SHA,0,0,0); return 0; }
+    uint64_t s=nc_tick_(ctx);
+    int st = nc_shim_sha256(msg, len, out_digest) == 0 ? NC_OK : NC_ERR_CRYPTO_BACKEND;
+    if(st != NC_OK) memset(out_digest, 0, 32);
+    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SHA,d,len/64,0); return d;
+}
+
+uint64_t nc_crypto_hmac_sha256_cycles(nc_ctx_t *ctx, const void *key, size_t key_len, const void *msg, size_t msg_len, uint8_t out_mac[32], nc_instruction_result_t *out){
+    if(!key||!msg||!out_mac){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SHA,0,0,0); return 0; }
+    uint64_t s=nc_tick_(ctx);
+    int st = nc_shim_hmac_sha256(key, key_len, msg, msg_len, out_mac) == 0 ? NC_OK : NC_ERR_CRYPTO_BACKEND;
+    if(st != NC_OK) memset(out_mac, 0, 32);
+    uint64_t e=nc_tick_(ctx), d=e-s; nc_fill_result_(ctx,out,st,NC_INSTR_SHA,d,msg_len/64,0); return d;
+}
+
+uint64_t nc_crypto_aead_chacha20poly1305_cycles(nc_ctx_t *ctx, const uint8_t *key, const uint8_t *nonce, const uint8_t *aad, size_t aad_len, const uint8_t *msg, size_t msg_len, uint8_t *cipher, uint8_t tag[16], nc_instruction_result_t *out){
+    if(!key||!nonce||!msg||!cipher||!tag){ nc_fill_result_(ctx,out,NC_ERR_BAD_ARGUMENT,NC_INSTR_SCALAR,0,0,0); return 0; }
+    /* ChaCha20-Poly1305 is only available via libsodium which is no longer
+     * bundled. Report NC_ERR_UNSUPPORTED so callers print "N/A". */
+    (void)aad; (void)aad_len; (void)key; (void)nonce;
+    memcpy(cipher, msg, msg_len); memset(tag, 0, 16);
+    uint64_t s=nc_tick_(ctx), e=nc_tick_(ctx), d=e-s;
+    nc_fill_result_(ctx,out,NC_ERR_UNSUPPORTED,NC_INSTR_SCALAR,d,msg_len/64,0); return d;
+}

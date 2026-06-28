@@ -32,7 +32,9 @@ const lib = ffi.Library(libName, {
   nc_cycles_to_ns_calibrated: ['uint64', ['uint64', 'double']],
   nc_raw_delta_to_ns_calibrated: ['uint64', ['uint64', 'uint64', 'double']],
   nc_clock_read_raw_route: ['uint64', [voidPtr, 'int']],
-  nc_clock_stability_advice: ['string', []]
+  nc_clock_stability_advice: ['string', []],
+  nc_feature_available: ['int', ['string']],
+  nc_hw_selected_name: ['string', []]
 });
 
 class NanoChronometer {
@@ -67,6 +69,17 @@ class NanoChronometer {
     return BigInt(lib.nc_measure_callback_min_cycles(this.ctx, cb, ref.NULL, iterations));
   }
   instructionAvailable(family) { return lib.nc_instruction_family_available(family) !== 0; }
+  /** Returns true if the named runtime feature is available.
+   * Pass a dot-separated path: "crypto.sha256", "hw.rdtsc", "simd.aes".
+   * When false the benchmark result should be reported as "N/A". */
+  featureAvailable(name) { return lib.nc_feature_available(name) !== 0; }
+  /** Name of the hardware counter backend selected at startup. */
+  hwBackendName() { return lib.nc_hw_selected_name(); }
+  /** Format an instruction result, returning "N/A" for unsupported features. */
+  static formatResult(result) {
+    if (!result || (result.status !== undefined && result.status === -1)) return 'N/A';
+    return result;
+  }
   measureAES(blocks = 1024) { const buf = Buffer.alloc(64); return BigInt(lib.nc_measure_aesenc_cycles(this.ctx, blocks, buf)); }
   measureSHAInstr(blocks = 1024) { const buf = Buffer.alloc(64); return BigInt(lib.nc_measure_sha256msg_cycles(this.ctx, blocks, buf)); }
   measurePCLMUL(blocks = 1024) { const buf = Buffer.alloc(64); return BigInt(lib.nc_measure_pclmul_cycles(this.ctx, blocks, buf)); }

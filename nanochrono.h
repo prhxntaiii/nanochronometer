@@ -811,7 +811,8 @@ typedef enum nc_wrapper_kind {
     NC_WRAPPER_CSHARP_PINVOKE,
     NC_WRAPPER_GO_CGO,
     NC_WRAPPER_RUST_FFI,
-    NC_WRAPPER_ZIG_FFI
+    NC_WRAPPER_ZIG_FFI,
+    NC_WRAPPER_WASM_WASI = 11
 } nc_wrapper_kind_t;
 
 typedef struct nc_nanoclock_snapshot {
@@ -861,6 +862,22 @@ NC_API uint64_t nc_measure_wrapper_overhead_cycles(nc_ctx_t *ctx, nc_wrapper_kin
 NC_API uint64_t nc_x64_sc_rdtsc_mfence(void);
 NC_API uint64_t nc_arm64_pmccntr_el0(void);
 NC_API int nc_arm64_pmccntr_el0_available(void);
+
+/* Returns the name of the hardware counter backend selected at runtime.
+ * Examples: "x64-rdtscp-lfence", "arm64-cntvct-el0", "wall-monotonic-ns". */
+NC_API const char *nc_hw_selected_name(void);
+
+/*
+ * nc_feature_available(name) — runtime feature probe for language bindings.
+ *
+ * name is a case-insensitive dot-separated feature path, e.g.:
+ *   "crypto.sha256"   "crypto.hmac"   "crypto.rand"
+ *   "hw.rdtsc"        "hw.cntpct"     "hw.cntvct"
+ *   "simd.aes"        "simd.avx2"     "simd.neon"
+ *
+ * Returns 1 if available, 0 if not available (caller should report "N/A").
+ */
+NC_API int nc_feature_available(const char *name);
 
 #endif /* NANOCHRONO_NANOCLOCK_API */
 
@@ -969,6 +986,11 @@ NC_API const char *nc_android_backend_name(nc_android_backend_t backend);
 NC_API const char *nc_android_mode_name(nc_android_mode_t mode);
 NC_API int nc_android_default_config(nc_android_config_t *cfg);
 NC_API int nc_android_detect_capabilities(nc_android_caps_t *out);
+
+/* Returns 1 when running on Android (compile-time constant).
+ * Used by the hardware dispatcher to enforce the sandbox rule:
+ * Android must use CNTVCT_EL0 only — kernel module loading is prohibited. */
+NC_API int nc_is_android(void);
 
 /* Explicit user-consent gate. This is the first privileged operation for root
  * mode and intentionally invokes `su -c id` so Magisk/SuperSU can ask the user.

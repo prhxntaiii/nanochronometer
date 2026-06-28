@@ -23,6 +23,8 @@ uint64_t nc_measure_kernel_timecall_overhead_cycles(nc_ctx_t *ctx, uint32_t iter
 uint64_t nc_measure_api_call_overhead_cycles(nc_ctx_t *ctx, uint32_t iterations);
 int nc_analyze_samples(const uint64_t *samples, uint32_t count, nc_sample_stats_t *out_stats);
 double nc_welch_t_score(const uint64_t *a, uint32_t na, const uint64_t *b, uint32_t nb);
+int nc_feature_available(const char *name);
+const char *nc_hw_selected_name(void);
 ]]
 local lib = ffi.load(os.getenv("NANOCHRONO_LIB") or "nanochrono")
 local M = {}
@@ -61,4 +63,6 @@ function Chrono:callback_min_cycles(fn, iters)
   self._last_cb = cb
   return tonumber(lib.nc_measure_callback_min_cycles(self.ctx, cb, nil, iters or 10000))
 end
+function Chrono:feature_available(name) return lib.nc_feature_available(name) ~= 0 end
+function Chrono:hw_backend_name() return ffi.string(lib.nc_hw_selected_name()) end
 return M

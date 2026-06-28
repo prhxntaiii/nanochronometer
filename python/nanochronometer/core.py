@@ -76,6 +76,9 @@ class NanoChronometer:
         self.lib.nc_asm_simd_family_name.restype = ctypes.c_char_p
         self.lib.nc_measure_wrapper_overhead_cycles.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_uint32]
         self.lib.nc_measure_wrapper_overhead_cycles.restype = ctypes.c_uint64
+        self.lib.nc_feature_available.argtypes = [ctypes.c_char_p]
+        self.lib.nc_feature_available.restype = ctypes.c_int
+        self.lib.nc_hw_selected_name.restype = ctypes.c_char_p
         self.ctx = self.lib.nc_create()
         if not self.ctx:
             raise RuntimeError("nc_create failed")
@@ -118,6 +121,23 @@ class NanoChronometer:
             if d and d < best:
                 best = d
         return 0 if best == (1 << 64) - 1 else best
+
+    def feature_available(self, name: str) -> bool:
+        """Returns True if the named runtime feature is available.
+
+        Pass a dot-separated feature path: "crypto.sha256", "hw.rdtsc", "simd.aes".
+        Returns False when the feature is absent — callers should report 'N/A'.
+        NC_ERR_UNSUPPORTED (-1) from measurement functions also means N/A.
+        """
+        return bool(self.lib.nc_feature_available(name.encode()))
+
+    def hw_backend_name(self) -> str:
+        """Name of the hardware counter backend selected at startup."""
+        raw = self.lib.nc_hw_selected_name()
+        return raw.decode("ascii", "replace") if raw else "unknown"
+
+    # NC_ERR_UNSUPPORTED sentinel — check result.status against this.
+    NC_ERR_UNSUPPORTED = -1
 
 class SampleStats(ctypes.Structure):
     _fields_ = [

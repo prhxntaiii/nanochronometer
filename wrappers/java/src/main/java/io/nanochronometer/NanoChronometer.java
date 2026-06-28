@@ -19,6 +19,8 @@ public final class NanoChronometer implements AutoCloseable {
         long nc_measure_callback_min_cycles(Pointer ctx, VoidCallback cb, Pointer arg, int iterations);
         int nc_analyze_samples(long[] samples, int count, SampleStats stats);
         double nc_welch_t_score(long[] a, int na, long[] b, int nb);
+        int nc_feature_available(String name);
+        String nc_hw_selected_name();
     }
     public interface VoidCallback extends Callback { void invoke(Pointer arg); }
     public static class SampleStats extends Structure {
@@ -49,5 +51,7 @@ public final class NanoChronometer implements AutoCloseable {
         return s;
     }
     public static double welchTScore(long[] a, long[] b) { return Lib.INSTANCE.nc_welch_t_score(a, a.length, b, b.length); }
+    public boolean featureAvailable(String name) { return Lib.INSTANCE.nc_feature_available(name) != 0; }
+    public String hwBackendName() { return Lib.INSTANCE.nc_hw_selected_name(); }
     public void close() { if (ctx != null) { Lib.INSTANCE.nc_destroy(ctx); ctx = null; } }
 }

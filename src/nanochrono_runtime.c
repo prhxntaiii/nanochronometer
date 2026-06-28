@@ -4,6 +4,8 @@
 #endif
 #endif
 #include "nanochrono.h"
+#include "nc_hw_dispatch.h"
+#include "nc_evp_shim.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -340,4 +342,76 @@ NC_API uint64_t nc_time_prefetch_reload_cycles(nc_ctx_t *ctx, const void *ptr){
     nc_asm_prefetcht0(ptr); nc_asm_lfence();
 #endif
     uint64_t sink=0; return nc_time_memory_load_cycles(ctx,ptr,1,&sink);
+}
+
+/* ── Hardware dispatcher bridge ─────────────────────────────────────────── */
+NC_API const char *nc_hw_selected_name(void)
+{
+    return nc_hw_dispatch_select()->name();
+}
+
+/* ── Runtime feature availability — used by language bindings ───────────── */
+static int nc_str_iprefix_(const char *s, const char *pfx)
+{
+    while (*pfx) {
+        char sc = *s >= 'A' && *s <= 'Z' ? (*s + 32) : *s;
+        char pc = *pfx >= 'A' && *pfx <= 'Z' ? (*pfx + 32) : *pfx;
+        if (sc != pc) return 0;
+        ++s; ++pfx;
+    }
+    return 1;
+}
+
+NC_API int nc_feature_available(const char *name)
+{
+    if (!name) return 0;
+
+    /* crypto.* — delegate to EVP shim runtime availability */
+    if (nc_str_iprefix_(name, "crypto.sha256") || nc_str_iprefix_(name, "crypto.sha"))
+        return nc_evp_sha256_available() == 0;   /* 0 == NC_EVP_SYM_OK */
+    if (nc_str_iprefix_(name, "crypto.hmac"))
+        return nc_evp_hmac_available() == 0;
+    if (nc_str_iprefix_(name, "crypto.rand"))
+        return nc_evp_rand_available() == 0;
+    if (nc_str_iprefix_(name, "crypto.chacha") || nc_str_iprefix_(name, "crypto.aead"))
+        return 0;  /* libsodium removed; always N/A */
+
+    /* hw.* — hardware counter availability */
+    if (nc_str_iprefix_(name, "hw.rdtsc") || nc_str_iprefix_(name, "hw.tsc")) {
+#if defined(__x86_64__) || defined(_M_X64)
+        return 1;
+#else
+        return 0;
+#endif
+    }
+    if (nc_str_iprefix_(name, "hw.cntpct"))
+        return nc_hw_dev_pmu_ok() && !nc_is_android();
+    if (nc_str_iprefix_(name, "hw.cntvct"))
+        return nc_hw_cntvct_ok();
+    if (nc_str_iprefix_(name, "hw.kmod") || nc_str_iprefix_(name, "hw.pmu_kmod"))
+        return nc_hw_dev_pmu_ok() && !nc_is_android();
+
+    /* simd.* — CPU instruction family availability */
+    if (nc_str_iprefix_(name, "simd.aes"))
+        return nc_instruction_family_available(NC_INSTR_AES);
+    if (nc_str_iprefix_(name, "simd.sha"))
+        return nc_instruction_family_available(NC_INSTR_SHA);
+    if (nc_str_iprefix_(name, "simd.avx512"))
+        return nc_instruction_family_available(NC_INSTR_AVX512);
+    if (nc_str_iprefix_(name, "simd.avx2"))
+        return nc_instruction_family_available(NC_INSTR_AVX2);
+    if (nc_str_iprefix_(name, "simd.neon"))
+        return nc_instruction_family_available(NC_INSTR_NEON);
+    if (nc_str_iprefix_(name, "simd.sve2"))
+        return nc_instruction_family_available(NC_INSTR_SVE2);
+    if (nc_str_iprefix_(name, "simd.sve"))
+        return nc_instruction_family_available(NC_INSTR_SVE);
+    if (nc_str_iprefix_(name, "simd.sme"))
+        return nc_instruction_family_available(NC_INSTR_SME);
+
+    /* wasm — always unavailable on native platforms */
+    if (nc_str_iprefix_(name, "wasm") || nc_str_iprefix_(name, "wasi"))
+        return 0;
+
+    return 0;  /* unknown feature */
 }

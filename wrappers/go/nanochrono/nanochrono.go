@@ -9,7 +9,10 @@ package nanochrono
 static void go_noop_bridge(void *arg) { (void)arg; }
 */
 import "C"
-import "unsafe"
+import (
+	"fmt"
+	"unsafe"
+)
 
 type Context struct{ ptr *C.nc_ctx_t }
 
@@ -55,3 +58,22 @@ func InstructionAvailable(f InstructionFamily) bool { return C.nc_instruction_fa
 func (c *Context) MeasureInstruction(f InstructionFamily, iterations uint32) InstructionResult { var r C.nc_instruction_result_t; C.nc_measure_instruction_family_cycles(c.ptr, C.nc_instruction_family_t(f), C.uint(iterations), &r); return InstructionResult{int32(r.status), uint32(r.family), uint32(r.backend), uint64(r.cycles), uint64(r.ns), uint64(r.blocks), uint64(r.checksum)} }
 func (c *Context) MeasureAES(blocks uint32) InstructionResult { var r C.nc_instruction_result_t; C.nc_measure_aesenc_cycles(c.ptr, C.uint(blocks), &r); return InstructionResult{int32(r.status), uint32(r.family), uint32(r.backend), uint64(r.cycles), uint64(r.ns), uint64(r.blocks), uint64(r.checksum)} }
 func CryptoBackendMask() int { return int(C.nc_crypto_backend_mask()) }
+
+// FeatureAvailable probes whether a named runtime feature is available.
+// name is a dot-separated path such as "crypto.sha256", "hw.rdtsc", "simd.aes".
+// Returns false (report "N/A") when the feature is absent in this environment.
+func FeatureAvailable(name string) bool {
+	cs := C.CString(name)
+	defer C.free(unsafe.Pointer(cs))
+	return C.nc_feature_available(cs) != 0
+}
+
+// HWBackendName returns the name of the selected hardware counter backend.
+func HWBackendName() string { return C.GoString(C.nc_hw_selected_name()) }
+
+// FormatResult returns "N/A" when status == NC_ERR_UNSUPPORTED (-1),
+// otherwise formats cycles and nanoseconds.
+func FormatResult(r InstructionResult) string {
+	if r.Status == -1 { return "N/A" }
+	return fmt.Sprintf("%d cycles / %d ns", r.Cycles, r.NS)
+}

@@ -39,7 +39,13 @@ extern "C" {
     fn nc_welch_t_score(a: *const u64, na: c_uint, b: *const u64, nb: c_uint) -> c_double;
     fn nc_toolkit_version() -> *const c_char;
     fn nc_empty_call() -> u64;
+    fn nc_feature_available(name: *const c_char) -> c_int;
+    fn nc_hw_selected_name() -> *const c_char;
 }
+
+/// Status code returned by instruction/crypto measurement functions.
+/// `NC_ERR_UNSUPPORTED = -1` means the feature is absent; callers should report "N/A".
+pub const NC_ERR_UNSUPPORTED: i32 = -1;
 
 pub struct NanoChronometer { raw: *mut nc_ctx_t }
 unsafe impl Send for NanoChronometer {}
@@ -69,6 +75,28 @@ impl NanoChronometer {
         ok.then_some(samples)
     }
 }
+    /// Returns true if the named feature is available at runtime.
+    /// Pass a dot-separated feature path such as "crypto.sha256", "hw.rdtsc", "simd.aes".
+    /// When false the caller should report "N/A" instead of a measurement.
+    pub fn feature_available(&self, name: &str) -> bool {
+        use core::ffi::CStr;
+        let mut buf = [0u8; 64];
+        let bytes = name.as_bytes();
+        let len = bytes.len().min(63);
+        buf[..len].copy_from_slice(&bytes[..len]);
+        unsafe { nc_feature_available(buf.as_ptr() as *const c_char) != 0 }
+    }
+
+    /// Name of the hardware counter backend selected at startup.
+    pub fn hw_backend_name(&self) -> &'static str {
+        unsafe {
+            core::ffi::CStr::from_ptr(nc_hw_selected_name())
+                .to_str()
+                .unwrap_or("unknown")
+        }
+    }
+}
+
 impl Drop for NanoChronometer { fn drop(&mut self) { unsafe { nc_destroy(self.raw) } } }
 
 pub fn analyze_samples(samples: &[u64]) -> Option<SampleStats> {
@@ -82,6 +110,24 @@ pub fn welch_t_score(a: &[u64], b: &[u64]) -> f64 {
 }
 
 pub fn empty_call() -> u64 { unsafe { nc_empty_call() } }
+
+/// Returns true if the named feature is available without a context object.
+/// Use `NanoChronometer::feature_available` when you have a context.
+pub fn feature_available(name: &str) -> bool {
+    let mut buf = [0u8; 64];
+    let bytes = name.as_bytes();
+    let len = bytes.len().min(63);
+    buf[..len].copy_from_slice(&bytes[..len]);
+    unsafe { nc_feature_available(buf.as_ptr() as *const c_char) != 0 }
+}
+
+/// Format an InstructionResult as a string, printing "N/A" for unsupported features.
+pub fn format_instruction_result(r: &InstructionResult) -> String {
+    if r.status == NC_ERR_UNSUPPORTED {
+        return "N/A".to_string();
+    }
+    format!("{} cycles / {} ns", r.cycles, r.ns)
+}
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
