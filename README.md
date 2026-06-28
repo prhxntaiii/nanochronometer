@@ -308,7 +308,7 @@ Pre-built static libraries are included under `externals/` for convenience:
 - x64: OpenSSL (`libcrypto.a` / `libcrypto.lib`) and libsodium
 - ARM64: BoringSSL (OpenSSL is not used on ARM64) and libsodium
 
-When linking the static OpenSSL archive on Windows, CMake automatically pulls in the required system libraries (`ws2_32`, `crypt32`, `bcrypt`, `advapi32`, `user32`). If distributing a binary that includes these libraries, include their license files — see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+When linking the static OpenSSL archive on Windows, CMake automatically pulls in the required system libraries (`ws2_32`, `crypt32`, `bcrypt`, `advapi32`, `user32`). If distributing a binary that includes these libraries, include their license files — please see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ---
 
