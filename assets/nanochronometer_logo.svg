@@ -10,7 +10,7 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-
+    
     <!-- Softer glow for rim and smaller elements -->
     <filter id="rimGlow" x="-25%" y="-25%" width="150%" height="150%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
