@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1030 220" width="1030" height="220">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 700;
+        src: url('data:font/truetype;base64,AAEAAAAMAIAAAwBAR1BPU0R2THUAAAbwAAAAIEdTVUIfSCdrAAAHEAAAADBPUy8yWs5gXwAAAUgAAABgY21hcAHeAhcAAAHUAAAAbGdseWaNWtMzAAACWAAAAvRoZWFkIiU5+wAAAMwAAAA2aGhlYQh+AuUAAAEEAAAAJGhtdHgcEwHAAAABqAAAACxsb2NhA9gEnAAAAkAAAAAYbWF4cAB6AEIAAAEoAAAAIG5hbWUf9zbOAAAFTAAAAYJwb3N0/7gAMgAABtAAAAAgAAEAAAAEAQal+JOIXw889QADA+gAAAAA2KSpyAAAAADmZ0ttABX/+APpAuQAAQAHAAIAAAAAAAAAAQAABBr+ogBkBCMAFQAUA+kAAQAAAAAAAAAAAAAAAAAAAAsAAQAAAAsAIwACAAAAAAABAAIAHgAGAAAAZAAAAAAAAAAEA2kCvAAFAAACigJYAAAASwKKAlgAAAFeADIBTgAAAAAIAAAAAAAAAAAAAAEAAAAAAAAAAAAAAABJVEZPAKAAQwB0BBr+ogBkBG8CcwAAAAEAAAAAAi4CwQAAACAABAH0AAAC+gAhAvAAPgKnABwCaAAcAqIAPgQjAD4CogA+An0AHAGsAD4BlgAVAAAAAgAAAAMAAAAUAAMAAQAAABQABABYAAAAEgAQAAMAAgBDAE4AYQBlAGgAbwByAHT//wAAAEMATgBhAGUAaABtAHIAdP///77/tP+i/5//nf+Z/5f/lgABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArAEEAcQCjAMUA+QEaAUUBXQF6AAEAIf/7As8CxgAbAAASNjYzMhYXIyYmIyIGFRQWMzI2NzMGBiMiJiY1IVqhZn2yHrwVTTFPYmJPMU0VvB6yfWahWgHIo1uEciwublxcbi4scoNbomgAAQA+AAACsgK+AAkAACEjAREjETMBETMCsqv+4qurAR6rAbH+TwK+/k0BswACABz/+AJpAjYAEgAeAAASNjYzMhYXNTMRIzUGBiMiJiY1JCYjIgYVFBYzMjY1HEFwRTtZGKurGVk7RHBBAaJHMzNHRzMzRwFugkYwJ0/90k8nMEeDVj9KSUBAS0pAAAACABz/+AJMAjYAGAAfAAAAByEWFjMyNzMOAiMiJiY1NDY2MzIWFhUnNCYjIgYHAkwD/n0EOytAGbYOSW5EUoBIR4BTUX5HrzwtKzsHAQgaNDc2N1gyRoJXV4JGRH5ULSw0Mi4AAQA+AAACaQLkABMAAAAWFREjETQmIyIGFREjETMRNjYzAfV0qjoxMTqrqxpaOAI0f2/+ugEvOD4+OP7RAuT+/yUsAAABAD4AAAPpAjQAIgAAABYVESMRNCYjIgYVESMRNCYjIgYVESMRMxU2NjMyFhc2NjMDbnuqOTIyOao5MjI5q6saVDU/YxwdZDsCNH5w/roBLzY7Ozb+0QEvNjs7Nv7RAi5GIyk2Mi46AAEAPgAAAmkCNAATAAAAFhURIxE0JiMiBhURIxEzFTY2MwH0dao6MTE6q6saWDcCNH9v/roBLzg+Pjj+0QIuSiUrAAIAHP/4AmACNgAPABsAABYmJjU0NjYzMhYWFRQGBiM2NjU0JiMiBhUUFjPqg0tMhFJShExNhVIxRUMxMkJBMQhGgldWg0ZGg1ZWg0aUSENDSEdEQ0gAAQA+AAABmAI0AAwAAAA2MxUjIgYVESMRMxUBB1o3L0BAq6sB/zW1N0X+/QIuXQAAAQAVAAABdQK2ABMAACUVIyImNTUjNTM1MxUzFSMVFBYzAXVXXWhERKtwcBgckZFbZ96OiIiO4BkWAAAABwBaAAMAAQQJAAAAogAAAAMAAQQJAAEADgCiAAMAAQQJAAIACACwAAMAAQQJAAMANgC4AAMAAQQJAAQAGADuAAMAAQQJAAUACgEGAAMAAQQJAAYAGAEQAEMAbwBwAHkAcgBpAGcAaAB0ACAAMgAwADIAMAAgAFQAaABlACAAUABvAHAAcABpAG4AcwAgAFAAcgBvAGoAZQBjAHQAIABBAHUAdABoAG8AcgBzACAAKABoAHQAdABwAHMAOgAvAC8AZwBpAHQAaAB1AGIALgBjAG8AbQAvAGkAdABmAG8AdQBuAGQAcgB5AC8AUABvAHAAcABpAG4AcwApAFAAbwBwAHAAaQBuAHMAQgBvAGwAZABJAFQARgBPADsAIABQAG8AcABwAGkAbgBzACAAQgBvAGwAZAA7ACAANAAuADAAMAA0AGIAOABQAG8AcABwAGkAbgBzACAAQgBvAGwAZAA0AC4AMAAwADQAUABvAHAAcABpAG4AcwAtAEIAbwBsAGQAAAADAAAAAAAA/7UAMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAKABwAHgABREZMVAAIAAQAAAAA//8AAAAAAAAAAQAAAAoALAAuAANERkxUABRkZXYyAB5kZXZhAB4ABAAAAAD//wAAAAAAAAAAAAA=') format('truetype');
+      }
+      @font-face {
+        font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 400;
+        src: url('data:font/truetype;base64,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') format('truetype');
+      }
+    </style>
+
+    <!-- Neon green glow for the N letter and bezel -->
+    <filter id="neonGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blur"/>
+      <feFlood flood-color="#22ff44" flood-opacity="0.6" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Softer glow for rim and smaller elements -->
+    <filter id="rimGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+      <feFlood flood-color="#33ff55" flood-opacity="0.55" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Watch face: dark sphere with green highlight at upper-left -->
+    <radialGradient id="watchBody" cx="38%" cy="34%" r="64%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"  stop-color="#203c20"/>
+      <stop offset="28%" stop-color="#0d1e0d"/>
+      <stop offset="65%" stop-color="#070d07"/>
+      <stop offset="100%" stop-color="#030603"/>
+    </radialGradient>
+
+    <!-- Outer bezel green ring -->
+    <radialGradient id="rimGrad" cx="32%" cy="26%" r="70%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"  stop-color="#66ff88"/>
+      <stop offset="22%" stop-color="#3ddd5a"/>
+      <stop offset="58%" stop-color="#17991f"/>
+      <stop offset="100%" stop-color="#0a4d11"/>
+    </radialGradient>
+
+    <!-- Intermediate dark ring between rim and face -->
+    <radialGradient id="innerRimGrad" cx="36%" cy="30%" r="66%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"  stop-color="#182a18"/>
+      <stop offset="100%" stop-color="#05080a"/>
+    </radialGradient>
+
+    <!-- N letter: top-lit green -->
+    <linearGradient id="nGrad" x1="12%" y1="0%" x2="88%" y2="100%">
+      <stop offset="0%"  stop-color="#77ffaa"/>
+      <stop offset="40%" stop-color="#33cc55"/>
+      <stop offset="100%" stop-color="#0d8822"/>
+    </linearGradient>
+
+    <!-- Top crown button -->
+    <linearGradient id="btnGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"  stop-color="#44bb55"/>
+      <stop offset="100%" stop-color="#0c3d14"/>
+    </linearGradient>
+
+    <!-- Side lugs -->
+    <linearGradient id="lugGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#0e4418"/>
+      <stop offset="50%" stop-color="#1e7730"/>
+      <stop offset="100%" stop-color="#0e4418"/>
+    </linearGradient>
+
+    <!-- Center pivot -->
+    <radialGradient id="dotGrad" cx="38%" cy="35%" r="62%">
+      <stop offset="0%"  stop-color="#ddfff0"/>
+      <stop offset="100%" stop-color="#2dbb44"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ============ STOPWATCH ICON (center: 108, 118) ============ -->
+
+  <!-- Subtle drop shadow -->
+  <ellipse cx="108" cy="214" rx="82" ry="6.5" fill="#000000" opacity="0.10"/>
+
+  <!-- Top crown button -->
+  <rect x="96" y="4" width="24" height="21" rx="5" fill="url(#btnGrad)" filter="url(#rimGlow)"/>
+  <rect x="98" y="5" width="20" height="17" rx="4" fill="#1a8830"/>
+  <rect x="100" y="7" width="9" height="5" rx="2.5" fill="#55cc66" opacity="0.55"/>
+
+  <!-- Left lug (angled ~-40°) -->
+  <g transform="rotate(-40, 108, 118)">
+    <rect x="17" y="111" width="27" height="15" rx="4" fill="url(#lugGrad)" filter="url(#rimGlow)"/>
+    <rect x="18" y="112" width="25" height="13" rx="3" fill="#1a6630"/>
+  </g>
+
+  <!-- Right lug (angled ~+40°) -->
+  <g transform="rotate(40, 108, 118)">
+    <rect x="172" y="111" width="27" height="15" rx="4" fill="url(#lugGrad)" filter="url(#rimGlow)"/>
+    <rect x="173" y="112" width="25" height="13" rx="3" fill="#1a6630"/>
+  </g>
+
+  <!-- Outer green bezel -->
+  <circle cx="108" cy="118" r="97" fill="url(#rimGrad)" filter="url(#rimGlow)"/>
+
+  <!-- Dark ring just inside bezel -->
+  <circle cx="108" cy="118" r="89" fill="url(#innerRimGrad)"/>
+
+  <!-- Main face -->
+  <circle cx="108" cy="118" r="83" fill="url(#watchBody)"/>
+
+  <!-- Face edge ring (subtle) -->
+  <circle cx="108" cy="118" r="83" fill="none" stroke="#1d6626" stroke-width="1.2" opacity="0.4"/>
+
+  <!-- Major tick marks (12, 3, 6, 9 o'clock) -->
+  <g stroke="#2ecc44" stroke-width="2.8" stroke-linecap="round">
+    <line x1="108.00" y1="34.00" x2="108.00" y2="46.00"/>
+    <line x1="192.00" y1="118.00" x2="180.00" y2="118.00"/>
+    <line x1="108.00" y1="202.00" x2="108.00" y2="190.00"/>
+    <line x1="24.00" y1="118.00" x2="36.00" y2="118.00"/>
+  </g>
+
+  <!-- Minor tick marks -->
+  <g stroke="#157722" stroke-width="1.5" stroke-linecap="round" opacity="0.65">
+    <line x1="150.00" y1="45.25" x2="146.00" y2="52.18"/>
+    <line x1="180.75" y1="76.00" x2="173.82" y2="80.00"/>
+    <line x1="180.75" y1="160.00" x2="173.82" y2="156.00"/>
+    <line x1="150.00" y1="190.75" x2="146.00" y2="183.82"/>
+    <line x1="66.00" y1="190.75" x2="70.00" y2="183.82"/>
+    <line x1="35.25" y1="160.00" x2="42.18" y2="156.00"/>
+    <line x1="35.25" y1="76.00" x2="42.18" y2="80.00"/>
+    <line x1="66.00" y1="45.25" x2="70.00" y2="52.18"/>
+  </g>
+
+  <!-- Small decorative dots on the face -->
+  <circle cx="141" cy="151" r="2.5" fill="#22aa33" opacity="0.60"/>
+  <circle cx="73"  cy="87"  r="2.2" fill="#22aa33" opacity="0.52"/>
+  <circle cx="149" cy="89"  r="1.8" fill="#22aa33" opacity="0.44"/>
+  <circle cx="67"  cy="151" r="2.3" fill="#22aa33" opacity="0.52"/>
+
+  <!-- The large N letter (fills most of the face) -->
+  <!-- N outer bounds: x: 63–145, y: 65–171 -->
+  <g filter="url(#neonGlow)">
+    <!-- Left vertical bar -->
+    <rect x="63" y="65" width="19" height="106" rx="2.5" fill="url(#nGrad)"/>
+    <!-- Right vertical bar -->
+    <rect x="118" y="65" width="19" height="106" rx="2.5" fill="url(#nGrad)"/>
+    <!-- Diagonal stroke (top-left → bottom-right) -->
+    <polygon points="63,65 82,65 137,171 118,171" fill="url(#nGrad)"/>
+  </g>
+
+  <!-- Subtle face glow ring -->
+  <circle cx="108" cy="118" r="82" fill="none" stroke="#33ee55" stroke-width="0.7" opacity="0.20"/>
+
+  <!-- Center pivot dot -->
+  <circle cx="108" cy="118" r="6.5" fill="url(#dotGrad)" filter="url(#rimGlow)"/>
+  <circle cx="108" cy="118" r="3.2" fill="#ddfff0"/>
+  <circle cx="108" cy="118" r="1.3" fill="#ffffff"/>
+
+  <!-- ============ LOGO TEXT ============ -->
+
+  <!-- "Nano" (neon green) -->
+  <text
+    x="228.00"
+    y="152"
+    font-family="Poppins, sans-serif"
+    font-weight="700"
+    font-size="82"
+    fill="#39E84A"
+    letter-spacing="-1">Nano</text>
+
+  <!-- "Chronometer" (near-black) -->
+  <text
+    x="449.84"
+    y="152"
+    font-family="Poppins, sans-serif"
+    font-weight="700"
+    font-size="82"
+    fill="#111111"
+    letter-spacing="-1">Chronometer</text>
+
+  <!-- Subtitle -->
+  <text
+    x="228.00"
+    y="181"
+    font-family="Poppins, sans-serif"
+    font-weight="400"
+    font-size="16"
+    fill="#555555"
+    letter-spacing="5">OPEN SOURCE HIGH PRECISION TIMER</text>
+
+</svg>
