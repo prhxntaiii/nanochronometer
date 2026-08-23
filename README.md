@@ -313,4 +313,4 @@ When linking the static OpenSSL archive on Windows, CMake automatically pulls in
 ---
 
 ## License
-This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](LICENSE) file for details.
+MIT
