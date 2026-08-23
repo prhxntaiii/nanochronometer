@@ -11,7 +11,6 @@ dist\
   licenses\
     openssl-LICENSE.txt
     openssl-NOTICE.txt
-    libsodium-LICENSE.txt
 ```
 
 ## Cryptography Libraries and Dependencies
