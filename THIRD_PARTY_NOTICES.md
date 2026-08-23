@@ -15,5 +15,4 @@ dist\
 
 ## Cryptography Libraries and Dependencies
 This project may link against or bundle third-party cryptographic libraries:
-- **wolfSSL / wolfCrypt**: Dual-licensed under GPLv2/GPLv3 and commercial licenses. This project utilizes wolfSSL under the terms of the **GNU General Public License v3.0**. See [wolfssl.com](https://www.wolfssl.com) for details.
 - **OpenSSL**: Used or referenced in compliance with their respective open-source licenses.
